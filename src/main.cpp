@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 18:35:18 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/27 19:03:50 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:28:29 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ int	main(void)
 
 	//START PROGRAM
 
-	//parse command-line arguments (port, password)
+	//parse command-line arguments (, password)
 		// We need the server port and connection password because the server cannot start without knowing where to listen and what password to enforce
 	//validate arguments
 		// Ensures user input is correct so the server doesn’t crash or misbehave later. Check for valid port range and non-empty password So people like Hugo don't fuck with out project
-	//initialize server state
+	//initialize server stateport
 		// Create data structures for clients, channels, and global configuration, because the server needs to track everything consistently
 	//create listening socket // Required to accept incoming client connections; without it, the server cannot receive anyone
 	//configure socket options // Set options like SO_REUSEADDR to prevent restart issues and improve stability
