@@ -1,4 +1,4 @@
-#ifndef CLIENT_HPP
+/* #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
 #include <map>
@@ -17,4 +17,4 @@ class Client {
 
 };
 
-#endif
+#endif */
