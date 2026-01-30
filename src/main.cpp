@@ -6,55 +6,64 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 18:35:18 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/29 17:30:01 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/30 10:15:28 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/socket.h>
 #include <netdb.h>
+#include <sys/types.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <string>
+#include <unistd.h>
+#include <sys/socket.h>
 
 using namespace std;
 
 int	main()
 {
+	// To test in another terminal: just use: IP (whatever you want beacuse we are using 0.0.0.0) and port 51000
+	int	listening;
+	int	port_num;
 	
-	// Create a socket
-	int listening = socket(AF_INET, SOCK_STREAM, 0);
+	// Create the socket
+	listening = socket(AF_INET, SOCK_STREAM, 0); // AF_INET = IPv4, SOCK_STREAM = TCP
+	port_num = 51000; // Port number to listen on, in this case we selected 51000 because it's above 50000 (the range for dynamic/private ports) to avoid conflicts with well-known services.
+	//51000 a random choice though, any port above 1024 would work for testing. Preferably above 50000 to avoid conflicts with other services.
 	if (listening == -1)
-	{
-		cerr << "Can't create a socket! Quitting" << endl;
-		return -1;
-	}
+		return (cerr << "Can't create a socket! Quitting" << endl, 1);
 
-	// Bind the ip address and port to a socket
-	sockaddr_in hint;
-	hint.sin_family = AF_INET;
-	hint.sin_port = htons(54000);
-	inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
-
-	bind(listening, (sockaddr*)&hint, sizeof(hint));
+	// Creating IP adrress and port and then Binding the ip address and port -> to the socket.
+	// setting up the sockaddr_in structure with the IP address and port, and then binding it to the socket.
+	sockaddr_in serverAddress; // struct that specifies the address family, IP address, and port for the socket.
+	memset(&serverAddress, 0, sizeof(serverAddress));
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_port = htons(port_num); // Port number. We are using htons to convert from host byte order to network byte order (little-endian to big-endian) - why? Because different systems may use different byte orders, and network protocols typically use big-endian order.
+	inet_pton(AF_INET, "0.0.0.0", &serverAddress.sin_addr); // Here we are telling the socket to bind to all available interfaces on the machine.
+	// Bind the socket to the IP address and port - here
+	if (bind(listening, (sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
+		return (cerr << "Can't bind to IP/port! Quitting" << endl, 2);
 
 	// Tell Winsock the socket is for listening
-	listen(listening, SOMAXCONN);
-
+	if (listen(listening, SOMAXCONN) == -1) // Here we are telling the socket to listen for incoming connections. SOMAXCONN is a constant that specifies the maximum length for the queue of pending connections.
+		return (cerr << "Can't listen! Quitting" << endl, 3);
+	cout << "Server listening -> Port: " << port_num << endl;
 	// Wait for a connection
-	sockaddr_in client;
-	socklen_t clientSize = sizeof(client);
+	sockaddr_in client; // Client address. Contains information about the client that is connecting to the server.
+	socklen_t clientSize = sizeof(client); // Size of the client address structure. For accept function.
 
-	int clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
+	int clientSocket = accept(listening, (sockaddr*)&client, &clientSize); // Accept a call/connection from a client
+	if (clientSocket == -1)
+		return (cerr << "Problem with client connecting! Quitting" << endl, 4);
+	// Display client information
+	char host[NI_MAXHOST];	// Client's remote name
+	char service[NI_MAXSERV];	// Service (i.e. port) the client is connect on
 
-	char host[NI_MAXHOST];      // Client's remote name
-	char service[NI_MAXSERV];   // Service (i.e. port) the client is connect on
+	memset(host, 0, NI_MAXHOST); // Initialize memory to zero before using it because getnameinfo may not write to all bytes
+	memset(service, 0, NI_MAXSERV); // same as above
 
-	memset(host, 0, NI_MAXHOST); // same as memset(host, 0, NI_MAXHOST);
-	memset(service, 0, NI_MAXSERV);
-
+	// Try to get the host name and service (port). If it fails, we use inet_ntop to get the IP address instead.
 	if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
 	{
 		cout << host << " connected on port " << service << endl;
@@ -66,7 +75,10 @@ int	main()
 	}
 
 	// Close listening socket
-	close(listening);
+	close(listening); // we should not close the listening socket here in a real server, because we want to keep accepting new connections.
+	// REALLY IMPORTANTE! In this simple example, we close it because we are only handling one client connection.
+	// In a real server we need to swap to: poll() or select() to handle multiple clients simultaneously.
+
 
 	// While loop: accept and echo message back to client
 	char buf[4096];
@@ -92,14 +104,74 @@ int	main()
 		cout << string(buf, 0, bytesReceived) << endl;
 
 		// Echo message back to client
-		send(clientSocket, buf, bytesReceived + 1, 0);
+		send(clientSocket, buf, bytesReceived, 0); // send() function to send data back to the client
 	}
 
 	// Close the socket
 	close(clientSocket);
 
+	//with this little program we are not able to connect an irc client to the server and talk with it.
+	//Because we need to implement the IRC protocol correctly in the code.
+	//This code is a basic TCP echo server, which means it can accept connections and echo back any messages it receives. However, to function as a proper IRC server,
+	//We are still missing the basic commands and behaviors defined by the IRC protocol. Such as NICK, USER, JOIN, PRIVMSG, etc.
+	//We would need to parse these commands from the client's messages and respond appropriately according to the IRC protocol specifications.
+	//So all we're missing is parsing and adding commands according to the IRC protocol.
+	//We need to parse the commands sent by the clients and handle them according to the IRC protocol.
+	//This involves recognizing commands like NICK, USER, JOIN, PRIVMSG, and others, extracting their parameters, and executing the appropriate actions (e.g., setting nicknames, joining channels, sending messages).
+	//Additionally, we'll need to manage the state of connected clients, channels, and enforce IRC rules.
+	//Implementing these features will allow our server to interact properly with IRC clients.
+	// we are also missing authentication and user management! We need to manage user states, including authentication (NICK/USER commands), tracking which users are in which channels, and enforcing permissions and modes.
+	// also handling edge cases and errors according to the IRC protocol would be necessary for a robust implementation.
+	// and finally, we need to ensure that our server can handle multiple clients simultaneously, which may involve using non-blocking sockets or multi-threading.
 
 
+/*
+Why IRC clients won’t “talk” to it
+
+IRC requires:
+
+\r\n terminated commands
+
+Mandatory handshake:
+
+PASS
+
+NICK
+
+USER
+
+Server numeric replies (001, 433, etc.)
+
+Stateful clients
+
+Message routing
+
+Your server:
+
+Echoes raw bytes
+
+Doesn’t parse commands
+
+Doesn’t send valid IRC replies
+
+So an IRC client will connect, then immediately disconnect.
+*/
+
+	return (0);
+
+
+
+
+
+
+
+
+
+
+
+
+	// PSEUDOCODE:
+	
 	//START PROGRAM
 
 	//parse command-line arguments (port, password)
@@ -149,5 +221,4 @@ int	main()
 	//cleanup resources // Free memory, remove state objects to prevent leaks
 	//END PROGRAM
 
-	return (0);
 }
