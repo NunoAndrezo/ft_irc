@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 18:35:18 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/30 10:19:38 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/30 10:21:24 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	main()
 	// To test in another terminal: just use: nc 127.0.0.1(because this IP always routes to local host, our server is listning on it because of 0.0.0.0) <port we are using in this case: 51000>
 	// we can also use the machine's LAN IP address to connect from another device in the same network.
 	// we can find it with: ifconfig (linux/mac) or ipconfig (windows)
+	// tldr - in this case: terminal 1 runs the ./out
+	//terminal 2: nc 0.0.0.0 51000
 	int	listening;
 	int	port_num;
 	
