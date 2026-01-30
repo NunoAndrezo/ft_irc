@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 18:35:18 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/30 10:15:28 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/30 10:19:38 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ using namespace std;
 
 int	main()
 {
-	// To test in another terminal: just use: IP (whatever you want beacuse we are using 0.0.0.0) and port 51000
+	// To test in another terminal: just use: nc 127.0.0.1(because this IP always routes to local host, our server is listning on it because of 0.0.0.0) <port we are using in this case: 51000>
+	// we can also use the machine's LAN IP address to connect from another device in the same network.
+	// we can find it with: ifconfig (linux/mac) or ipconfig (windows)
 	int	listening;
 	int	port_num;
 	
