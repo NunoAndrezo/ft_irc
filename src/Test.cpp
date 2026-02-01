@@ -21,7 +21,6 @@
 #include <poll.h>
 #include <arpa/inet.h>
 #include <vector>
-#include "Client/Client.hpp"
 
 #define BUFFER_SIZE 1024
 
