@@ -20,15 +20,24 @@
 #include <sys/socket.h>
 #include <poll.h>
 #include <arpa/inet.h>
-#include <netdb.h>
+#include <vector>
 
 #define BUFFER_SIZE 1024
 
+void addPollfd(std::vector<pollfd>& fds, int fd, short events) // copied from https://github.com/caroldaniel/42sp-cursus-ft_irc/
+{
+	pollfd p;
+    p.fd = fd;
+    p.events = events;
+    p.revents = 0;
+    fds.push_back(p);
+}
 
 int main()
 {
+	std::vector<pollfd> pollfds;
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    int portnumber = 54000;
+    int portnumber = 51212;
     struct sockaddr_in server;
     struct sockaddr_in client;
     socklen_t clientSize = sizeof(client);
@@ -43,8 +52,8 @@ int main()
     //bind the socket to ip/port
     server.sin_family = AF_INET;
     server.sin_port = htons(portnumber);
-    server.sin_addr.s_addr = inet_addr("0.0.0.0");
-    //permite reutilizar a mesma socket imediatamente
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    //permite reutilizar o endereço imediatamente
     int opt = 1;
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
     {
@@ -52,13 +61,12 @@ int main()
         close(server_fd);
         return 1;
     }
-/*     //set socket to non-blocking
     if (fcntl(server_fd, F_SETFL, O_NONBLOCK) == -1)
     {
         std::cerr << "Fcntl failed: " << strerror(errno) << std::endl;
         close(server_fd);
         return 1;
-    } */
+    }
     // bind the socket to the IP and port
     if (bind(server_fd, (sockaddr*)&server, sizeof(server)) == -1)
     {
@@ -74,50 +82,105 @@ int main()
         return 1;
     }
     std::cout << "Server listening on port " << portnumber << std::endl;
-    //accept a call
-    char host[NI_MAXHOST]; // client's remote name
-    char service[NI_MAXSERV]; // service (i.e. port) the client is connect on
-    // limpar memoria para nao ocupar com garbage values
+    //accept a call TODO APARTIR DAQUI
     memset(&client, 0, sizeof(client));
-    memset(host, 0, NI_MAXHOST);
-    memset(service, 0, NI_MAXSERV);
-    int client_fd = accept(server_fd, (sockaddr*)&client, &clientSize);
-    if (client_fd == -1)
+
+
+
+    // int client_fd = accept(server_fd, (sockaddr*)&client, &clientSize);
+/*     if (client_fd == -1)
     {
         std::cerr << "Accept failed: " << strerror(errno) << std::endl;
         close(server_fd);
-        close(client_fd);
         return 1;
     }
-    if (getnameinfo((sockaddr*)&client, clientSize, host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
-    {
-        std::cout << host << " connected on port " << service << std::endl;
-    }
-    else
-    {
-        inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-        std::cout << host << " connected on port " << ntohs(client.sin_port) << std::endl;
-    }
-    char buffer[BUFFER_SIZE];
-    int bytesReceived;
+    std::cout << "Client connected!" << std::endl; */
+    addPollfd(pollfds, server_fd, POLLIN);
+    addPollfd(pollfds, STDIN_FILENO, POLLIN);    
+
+
+
+	
     while (1)
-    {
-        memset(buffer, 0, BUFFER_SIZE);
-        bytesReceived = recv(client_fd, buffer, BUFFER_SIZE, 0);
-        if (bytesReceived == -1)
-        {
-            std::cerr << "Recv failed: " << strerror(errno) << std::endl;
-            break;
+	{
+		int poll_count = poll(pollfds.data(), pollfds.size(), 0);
+		if (poll_count == - 1)
+			return 1;
+		if (poll_count == 0)
+			continue;
+
+		if (pollfds[0].revents & POLLIN)
+		{
+			int client_fd = accept(server_fd, (sockaddr*)&client, &clientSize);
+			if (client_fd == -1)
+			{
+				std::cerr << "Accept failed: " << strerror(errno) << std::endl;
+			}
+		    std::cout << "Client connected!" << std::endl;
+			addPollfd(pollfds, client_fd, POLLIN | POLLHUP);
+			send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
+			// \_____> criacao clientes
+
+
+
+
+		}
+        // if (recv(client_fd, buffer, sizeof(buffer), 0) >  0){
+        //     std::cout << "Received: " << buffer << std::endl;
+        // }
+
+
+		if (pollfds[1].revents & POLLIN) {
+            char buffer[1024];
+            int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
+			std::cout << buffer << std::endl;
+			std::cout << "ola" << std::endl;
+			
+			break ;
+            // Check for errors in the read function
         }
-        if (bytesReceived == 0)
-        {
-            std::cout << "Client disconnected." << std::endl;
-            break;
-        }
-        std::cout << "Received: " << std::string(buffer, 0, bytesReceived) << std::endl;
-        send(client_fd, buffer, bytesReceived + 1, 0); // echo it back
+
+
+
+
+
+
+
+		
+		for (size_t i = 2; i < pollfds.size(); ++i)
+		{
+			if ((pollfds[i].revents & POLLHUP) == POLLHUP)
+			{
+				std::cout << "Client disconnected!" << std::endl; // dont understand when this line is supposed to show up
+				close (pollfds[i].fd);
+				pollfds.erase(pollfds.begin() + i);
+			}
+			if ((pollfds[i].revents & POLLIN) == POLLIN)
+			{
+
+				// aqui faz-se parse dos commandos
+
+
+				char buffer[BUFFER_SIZE];
+				memset(buffer, '\0', BUFFER_SIZE);
+				if (recv(pollfds[i].fd, buffer, sizeof(buffer), 0) > 0)
+				{
+					std::cout << buffer << std::endl;
+					
+					std::string str_buffer(buffer);
+					str_buffer = str_buffer.substr(0, 4);
+					if (str_buffer.find("PING"))
+					{
+						std::string response = "PONG" + str_buffer.substr(4);
+						send(pollfds[i].fd, response.c_str(), response.length(), 0);
+					}
+					memset(buffer, '\0', BUFFER_SIZE);
+				}
+
+			}
+		}
     }
-    close(client_fd);
+    // close(client_fd);
     close(server_fd);
     return 0;
 }
