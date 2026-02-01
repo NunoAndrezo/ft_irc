@@ -118,9 +118,8 @@ int main()
 			}
 		    std::cout << "Client connected!" << std::endl;
 			addPollfd(pollfds, client_fd, POLLIN | POLLHUP);
-			send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0);
-			
-			// \_____> ciracao clientes
+			send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
+			// \_____> criacao clientes
 
 
 
@@ -136,6 +135,7 @@ int main()
             int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
 			std::cout << buffer << std::endl;
 			std::cout << "ola" << std::endl;
+			
 			break ;
             // Check for errors in the read function
         }
@@ -161,11 +161,12 @@ int main()
 				// aqui faz-se parse dos commandos
 
 
-
 				char buffer[BUFFER_SIZE];
+				memset(buffer, '\0', BUFFER_SIZE);
 				if (recv(pollfds[i].fd, buffer, sizeof(buffer), 0) > 0)
 				{
 					std::cout << buffer << std::endl;
+					
 					std::string str_buffer(buffer);
 					str_buffer = str_buffer.substr(0, 4);
 					if (str_buffer.find("PING"))
@@ -173,6 +174,7 @@ int main()
 						std::string response = "PONG" + str_buffer.substr(4);
 						send(pollfds[i].fd, response.c_str(), response.length(), 0);
 					}
+					memset(buffer, '\0', BUFFER_SIZE);
 				}
 
 			}
