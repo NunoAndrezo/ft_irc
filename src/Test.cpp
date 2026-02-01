@@ -100,7 +100,7 @@ int main()
 
 
 
-
+	
     while (1)
 	{
 		int poll_count = poll(pollfds.data(), pollfds.size(), 0);
@@ -120,6 +120,11 @@ int main()
 			addPollfd(pollfds, client_fd, POLLIN | POLLHUP);
 			send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0);
 			
+			// \_____> ciracao clientes
+
+
+
+
 		}
         // if (recv(client_fd, buffer, sizeof(buffer), 0) >  0){
         //     std::cout << "Received: " << buffer << std::endl;
@@ -131,6 +136,7 @@ int main()
             int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
 			std::cout << buffer << std::endl;
 			std::cout << "ola" << std::endl;
+			break ;
             // Check for errors in the read function
         }
 
@@ -151,6 +157,11 @@ int main()
 			}
 			if ((pollfds[i].revents & POLLIN) == POLLIN)
 			{
+
+				// aqui faz-se parse dos commandos
+
+
+
 				char buffer[BUFFER_SIZE];
 				if (recv(pollfds[i].fd, buffer, sizeof(buffer), 0) > 0)
 				{
