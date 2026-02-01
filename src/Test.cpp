@@ -61,6 +61,7 @@ int main()
         close(server_fd);
         return 1;
     }
+    //set socket to non-blocking
     if (fcntl(server_fd, F_SETFL, O_NONBLOCK) == -1)
     {
         std::cerr << "Fcntl failed: " << strerror(errno) << std::endl;
@@ -97,10 +98,6 @@ int main()
     std::cout << "Client connected!" << std::endl; */
     addPollfd(pollfds, server_fd, POLLIN);
     addPollfd(pollfds, STDIN_FILENO, POLLIN);    
-
-
-
-	
     while (1)
 	{
 		int poll_count = poll(pollfds.data(), pollfds.size(), 0);
@@ -108,7 +105,6 @@ int main()
 			return 1;
 		if (poll_count == 0)
 			continue;
-
 		if (pollfds[0].revents & POLLIN)
 		{
 			int client_fd = accept(server_fd, (sockaddr*)&client, &clientSize);
@@ -125,62 +121,39 @@ int main()
 
 
 		}
-        // if (recv(client_fd, buffer, sizeof(buffer), 0) >  0){
-        //     std::cout << "Received: " << buffer << std::endl;
-        // }
-
-
 		if (pollfds[1].revents & POLLIN) {
             char buffer[1024];
             int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
-			std::cout << buffer << std::endl;
-			std::cout << "ola" << std::endl;
-			
+			std::cout << buffer << std::endl;		
 			break ;
             // Check for errors in the read function
         }
-
-
-
-
-
-
-
-		
+		char buffer[BUFFER_SIZE];
 		for (size_t i = 2; i < pollfds.size(); ++i)
 		{
 			if ((pollfds[i].revents & POLLHUP) == POLLHUP)
 			{
-				std::cout << "Client disconnected!" << std::endl; // dont understand when this line is supposed to show up
+				std::cout << "Client disconnected!" << std::endl; // When client disconnects shows message
 				close (pollfds[i].fd);
 				pollfds.erase(pollfds.begin() + i);
 			}
 			if ((pollfds[i].revents & POLLIN) == POLLIN)
 			{
-
 				// aqui faz-se parse dos commandos
-
-
-				char buffer[BUFFER_SIZE];
-				memset(buffer, '\0', BUFFER_SIZE);
+                memset(buffer, '\0', BUFFER_SIZE);
 				if (recv(pollfds[i].fd, buffer, sizeof(buffer), 0) > 0)
 				{
 					std::cout << buffer << std::endl;
-					
-					std::string str_buffer(buffer);
-					str_buffer = str_buffer.substr(0, 4);
-					if (str_buffer.find("PING"))
-					{
-						std::string response = "PONG" + str_buffer.substr(4);
-						send(pollfds[i].fd, response.c_str(), response.length(), 0);
+                    if (strncmp(buffer, "PING", 4) == 0) //example of command TODO
+                    {
+                        std::string response = "PONG" + std::string(buffer + 4);
+                        send(pollfds[i].fd, response.c_str(), response.length(), 0);    
 					}
-					memset(buffer, '\0', BUFFER_SIZE);
 				}
 
 			}
 		}
     }
-    // close(client_fd);
     close(server_fd);
     return 0;
 }
