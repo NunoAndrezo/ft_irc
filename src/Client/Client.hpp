@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/01 19:27:55 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/02 19:30:50 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,31 +18,47 @@
 #include <vector>
 #include <poll.h>
 #include <unistd.h>
+#include <sys/socket.h>
+
+#include "../utils/IRCmacros.hpp"
 
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		etom		0.0.0.0			:etom
+// int result = getnameinfo((struct sockaddr *)&client_address, client_address_size, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
 
-class Client { // int result = getnameinfo((struct sockaddr *)&client_address, client_address_size, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
+class Client {
 	private:
+
 		int			_fd;
+		std::string	_buffer;
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_hostname;
+		std::string	_servername;
 		std::string	_realname;
-		std::string _servername;
 
+		std::string	_serverHostname;
+
+		bool		_hasPass;
 		bool		_isRegistered;
-		bool		_isAuthenticated;
 
 	public:
 
-		Client(int clientFd);
+		Client();
+		Client(int fd, std::string serverHostname);
 		~Client();
 		Client(const Client& other);
 		Client& operator=(const Client& other);
 
+		void reply(std::string clientCode, std::string message);
+
+		// Getters and Setters
+
 		int getFd() const;
 		void setFd(const int fd);
+
+		std::string getBuffer() const;
+		void setBuffer(const std::string& buffer);
 	
 		std::string getNickname() const;
 		void setNickname(const std::string& nickname);
@@ -62,8 +78,15 @@ class Client { // int result = getnameinfo((struct sockaddr *)&client_address, c
 		bool getIsRegistered() const;
 		void setIsRegistered(const bool status);
 	
-		bool getIsAuthenticated() const;
-		void setIsAuthenticated(const bool status);
+		bool getHasPass() const;
+		void setHasPass(const bool status);
+
+		
+
+		// Buffer Methods
+
+		void appendBuffer(const std::string& data);
+		void clearBuffer();
 
 };
 

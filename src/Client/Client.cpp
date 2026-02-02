@@ -6,20 +6,33 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/01 19:27:49 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/02 19:50:24 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(int clientFd) : _fd(clientFd),
-								_isRegistered(false),
-								_isAuthenticated(false),
-								_nickname(""),
-								_username(""),
-								_hostname(""),
-								_realname(""),
-								_servername("")
+Client::Client(): _fd(-1),
+				_nickname(""),
+				_username(""),
+				_hostname(""),
+				_servername(""),
+				_realname(""),
+				_hasPass(false),
+				_isRegistered(false)
+{
+
+}
+
+Client::Client(int clientFd, std::string serverHostname): _fd(clientFd),
+							_nickname(""),
+							_username(""),
+							_hostname(""),
+							_servername(""),
+							_realname(""),
+							_serverHostname(serverHostname),
+							_hasPass(false),
+							_isRegistered(false)
 {
 
 }
@@ -46,9 +59,18 @@ Client& Client::operator=(const Client& other)
 		_realname = other._realname;
 		_servername = other._servername;
 		_isRegistered = other._isRegistered;
-		_isAuthenticated = other._isAuthenticated;
+		_hasPass = other._hasPass;
 	}
 	return *this;
+}
+
+void Client::reply(std::string clientCode, std::string message) // example: ": " + servername +  + ":" + "possible message" + "\r\n";
+{
+	std::string nick = _nickname.empty() ? "unregistered " : _nickname;
+	std::string replyMessage = ":" + _serverHostname + " " + clientCode + " " + nick + " " + message + CRLF;
+
+	std::cout << "Client Reply: " << replyMessage << std::endl; // for debugging;
+	send(_fd, replyMessage.c_str(), replyMessage.length(), 0);
 }
 
 int Client::getFd() const
@@ -59,6 +81,16 @@ int Client::getFd() const
 void Client::setFd(const int fd)
 {
 	_fd = fd;
+}
+
+std::string Client::getBuffer() const
+{
+	return _buffer;
+}
+
+void Client::setBuffer(const std::string& buffer)
+{
+	_buffer = buffer;
 }
 
 std::string Client::getNickname() const
@@ -121,12 +153,21 @@ void Client::setIsRegistered(const bool status)
 	_isRegistered = status;
 }
 
-bool Client::getIsAuthenticated() const
+bool Client::getHasPass() const
 {
-	return _isAuthenticated;
+	return _hasPass;
 }
 
-void Client::setIsAuthenticated(const bool status)
+void Client::setHasPass(const bool status)
 {
-	_isAuthenticated = status;
+	_hasPass = status;
+}
+
+void Client::appendBuffer(const std::string& data)
+{
+	_buffer += data;
+}
+void Client::clearBuffer()
+{
+	_buffer.clear();
 }

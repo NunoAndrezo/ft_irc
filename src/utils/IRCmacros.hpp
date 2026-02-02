@@ -8,6 +8,8 @@
 /*                           NUMERICAL REPLIES                                */
 /******************************************************************************/
 
+#define RPL_NOTICE                 "NOTICE"
+
 /*
 **  Connection Registration
 */
