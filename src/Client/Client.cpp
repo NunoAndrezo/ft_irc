@@ -6,16 +6,16 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/01 19:27:49 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/02 13:06:32 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(int clientFd) : _fd(clientFd),
+Client::Client(int clientFd, std::string serverHostname) : _fd(clientFd),
 								_isRegistered(false),
 								_isAuthenticated(false),
-								_nickname(""),
+								_serverHostname(serverHostname),
 								_username(""),
 								_hostname(""),
 								_realname(""),
@@ -40,7 +40,7 @@ Client& Client::operator=(const Client& other)
 	if (this != &other)
 	{
 		_fd = other._fd;
-		_nickname = other._nickname;
+		_nickname = other._serverHostname;
 		_username = other._username;
 		_hostname = other._hostname;
 		_realname = other._realname;
@@ -50,6 +50,20 @@ Client& Client::operator=(const Client& other)
 	}
 	return *this;
 }
+
+
+// Client Methods
+
+void Client::reply(std::string clientCode, std::string message) // example: ": " + servername +  + ":" + "possible message" + "\r\n";
+{
+	std::string replyMessage = ":" + _serverHostname + " " + clientCode + " " + _username + " " + message + CRLF;
+
+	std::cout << "Client Reply: " << replyMessage << std::endl; // for debugging;
+	send(_fd, replyMessage.c_str(), replyMessage.length(), 0);
+}
+
+
+// Getters and Setters
 
 int Client::getFd() const
 {

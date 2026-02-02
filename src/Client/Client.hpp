@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/01 19:27:55 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/02 12:53:46 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,17 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <poll.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include "../utils/IRCmacros.hpp"
 
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		etom		0.0.0.0			:etom
 
-class Client { // int result = getnameinfo((struct sockaddr *)&client_address, client_address_size, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
+class Client {
 	private:
+		std::string _serverHostname;
+
 		int			_fd;
 		std::string	_nickname;
 		std::string	_username;
@@ -36,10 +38,12 @@ class Client { // int result = getnameinfo((struct sockaddr *)&client_address, c
 
 	public:
 
-		Client(int clientFd);
+		Client(int clientFd, std::string serverHostname);
 		~Client();
 		Client(const Client& other);
 		Client& operator=(const Client& other);
+
+		void reply(std::string clientCode, std::string message);
 
 		int getFd() const;
 		void setFd(const int fd);
