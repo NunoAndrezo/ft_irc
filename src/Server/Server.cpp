@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 22:07:44 by marvin           ###   ########.fr       */
+/*   Updated: 2026/02/03 23:37:49 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -423,16 +423,6 @@ void Server::serverRun()
 				if (_debug)
 					std::cout << "[LOG] FD " << _pollfds[i].fd << " not found in clients map, skipping." << std::endl;
 				continue;
-			}
-			//check for disconnections on client side
-			if (_pollfds[i].revents & POLLHUP) // nn funciona nao sei porque
-			{												//	--> temos que ter uma maneira
-				std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
-				std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected/timed out." << std::endl;
-				_clients[_pollfds[i].fd]->setWasDisconnected(true);
-				close(_pollfds[i].fd);
-				_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
-				_pollfds.erase(_pollfds.begin() + i--);
 			}
 			//check for incoming data client side
 			if (_pollfds[i].revents & POLLIN)
