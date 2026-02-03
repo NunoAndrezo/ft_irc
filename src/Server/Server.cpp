@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 00:36:06 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 12:40:13 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //  nao sei aonde meter isso
 
-void processCommand(Client& client, std::string line, const std::string& serverPass, std::map<int, Client*>& clients)
+void Server::processCommand(Client& client, std::string line)
 {
 	std::stringstream ss(line);
 	std::string command;
@@ -26,12 +26,12 @@ void processCommand(Client& client, std::string line, const std::string& serverP
 		return;
 
 	// 1. QUIT handled in main loop to ensure cleanup
-
+	
 	// 2. CAP
 	if (command == "CAP")
 	{
-		// client.reply(RPL_CAP, ":No supported capabilities available");
-		send(client.getFd(), "CAP * LS :\r\n", 12, 0);
+		client.reply(RPL_CAP, ":No supported capabilities available");
+		// send(client.getFd(), "CAP * LS :\r\n", 12, 0);
 		return;
 	}
 
@@ -45,7 +45,7 @@ void processCommand(Client& client, std::string line, const std::string& serverP
 		}
 		std::string pass;
 		ss >> pass;
-		if (pass == serverPass)
+		if (pass == _serverPassword)
 		{
 			client.setHasPass(true);
 			client.reply(RPL_NOTICE, "Step 1/3: Password accepted. Now send NICK <nickname>.");
@@ -73,7 +73,7 @@ void processCommand(Client& client, std::string line, const std::string& serverP
 			client.reply(ERR_NONICKNAMEGIVEN, ":No nickname given");
 			return;
 		}
-		for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+		for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		{
 			if (it->second->getNickname() == nick && it->first != client.getFd())
 			{
@@ -120,7 +120,7 @@ void processCommand(Client& client, std::string line, const std::string& serverP
 		{
 			std::string msg = line.substr(pos);
 			bool found = false;
-			for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+			for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 			{
 				if (it->second->getNickname() == target)
 				{
@@ -133,6 +133,10 @@ void processCommand(Client& client, std::string line, const std::string& serverP
 			if (!found)
 				client.reply(ERR_NOSUCHNICK, target + " :No such nick");
 		}
+	}
+	else if (command == "PING")
+	{
+		client.reply("PONG", ":pong");
 	}
 	else
 	{
@@ -202,7 +206,7 @@ void Server::newClientConnection()
 	// m += ":ircserv NOTICE * :1. PASS <password>\r\n";
 	// m += ":ircserv NOTICE * :2. NICK <nickname>\r\n";
 	// m += ":ircserv NOTICE * :3. USER <username> 0 * :<realname>\r\n";
-	clientObj->reply(RPL_WELCOME, "Connection Established");
+	// clientObj->reply(RPL_WELCOME, "Connection Established");
 	// send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
 	
 }
@@ -244,6 +248,67 @@ void Server::serverSocketStart()
 	std::cout << "Server listening on port " << _serverPort << std::endl;
 }
 
+
+
+void Server::clientMessage(int i, Client &c)
+{
+	char buf[BUFSIZ];
+	int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
+	if (_debug)
+		std::cout << "[LOG] Received message ****" << buf << "****" << std::endl;
+	if (bytes < 0)
+	{
+		throw std::runtime_error("Recv failed: " + std::string(strerror(errno)));
+	}
+
+	c.appendBuffer(buf);
+	
+	size_t pos;
+	while (!c.getBuffer().empty())
+	{
+		if (c.getBuffer().find(CRLF) == std::string::npos)
+			return; // wait for more data
+		pos = c.getBuffer().find(CRLF);
+		std::string line = c.getBuffer().substr(0, pos);
+		c.setBuffer(c.getBuffer().substr(pos + 2)); // remove processed line + CRLF
+
+		if (line.find("QUIT") == 0) // deviamos tratar o quit como um commando normal
+		{
+			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
+			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
+			c.reply(RPL_QUIT, ":Client quitting");
+			close(_pollfds[i].fd);
+			_clients.erase(_pollfds[i].fd);
+			_pollfds.erase(_pollfds.begin());
+			delete &c;
+			return; 
+		}
+
+		processCommand(c, line);
+		std::cout << "Remaining buffer after processing: '" << c.getBuffer() << "'" << std::endl;
+	}
+	/* while ((pos = c.getBuffer().find_first_of("\r\n")) != std::string::npos) // tomaz -- problema esta aqui nesse while penso eu
+	{
+		std::string line = c.getBuffer().substr(0, pos);
+		size_t next = c.getBuffer().find_first_not_of("\r\n", pos);
+		if (next == std::string::npos)
+			c.getBuffer().clear();
+		else
+			c.getBuffer().erase(0, next);
+		if (!line.empty())
+		{
+			processCommand(c, line, _serverPassword, _clients);
+			std::cout << "remaining buffer :" << c.getBuffer() << "buffer ate aqui" << std::endl;
+			//c->clearBuffer(); // Clear buffer after processing (essa linha esta aqui porque senao o server entala num loop com o cliente por cause do CAP)
+		}
+	} */
+
+	// uma funcao que continue a executar os commandos ate o buffer estar vazio? 
+	// ou uma funcao que execute um commando e deixe o resto no buffer para a proxima vez? <<==== vamos tentar isso primeiro
+
+
+}
+
 void Server::serverRun()
 {
 	try
@@ -266,7 +331,8 @@ void Server::serverRun()
 			throw std::runtime_error("Error: Poll failed" + std::string(strerror(errno)));
 		if (pollCount == 0)
 			continue;
-		// std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
+		if (_debug)
+			std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
 		if (_pollfds[0].revents & POLLIN)
 		{
 			try	
@@ -289,60 +355,24 @@ void Server::serverRun()
 			std::string bufstring(buffer);	
 			if (bufstring.find("EXIT") != std::string::npos)
 				break ;
-			// Check for errors in the read function
 		}
 		for (size_t i = 2; i < _pollfds.size(); ++i)
 		{
-			if (_pollfds[i].revents & POLLHUP)
-			{
-					std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
-					std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected/timed out." << std::endl;
-					close(_pollfds[i].fd);
-					_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
-					_pollfds.erase(_pollfds.begin() + i--);
+			if (_debug)
+				std::cout << "FD " << _pollfds[i].fd << " revents: " << _pollfds[i].revents << std::endl;
+			if ((_pollfds[i].revents & POLLHUP) == POLLHUP) // nn funciona nao sei porque
+			{												//	--> temos que ter uma maneira
+				std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
+				std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected/timed out." << std::endl;
+				close(_pollfds[i].fd);
+				_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
+				_pollfds.erase(_pollfds.begin() + i--);
 			}
-			if (_pollfds[i].revents & POLLIN) // a forma como isso esta escrito faz com que ele volte a recomecar o loop se a mensagem recebida for maior que o buffer
+			if ((_pollfds[i].revents & POLLIN) == POLLIN)
 			{
-				char buf[BUFSIZ];
-				// std::cout << "ola" << std::endl;
-				int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
-				Client *c = _clients[_pollfds[i].fd];
-				if (bytes < 0)
-				{
-					throw std::runtime_error("Recv failed: " + std::string(strerror(errno)));
-				}
-				else
-				{
-					buf[bytes] = '\0';
-				c->appendBuffer(buf);
-				size_t pos;
-				while ((pos = c->getBuffer().find_first_of("\r\n")) != std::string::npos) // tomaz -- problema esta aqui nesse while penso eu
-				{
-					std::string line = c->getBuffer().substr(0, pos);
-					size_t next = c->getBuffer().find_first_not_of("\r\n", pos);
-					if (next == std::string::npos)
-						c->getBuffer().clear();
-					else
-						c->getBuffer().erase(0, next);
-					if (!line.empty())
-					{
-						if (line.find("QUIT") == 0) // deviamos tratar o quit como um commando normal
-						{
-							std::string name = c->getNickname().empty() ? "Unregistered Client" : c->getNickname();
-							std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
-							close(_pollfds[i].fd);
-							_clients.erase(_pollfds[i].fd);
-							_pollfds.erase(_pollfds.begin() + i--);
-							delete c;
-							break; 
-						}
-						processCommand(*c, line, _serverPassword, _clients);
-						std::cout << "remaining buffer :" << c->getBuffer() << "buffer ate aqui" << std::endl;
-						c->clearBuffer(); // Clear buffer after processing (essa linha esta aqui porque senao o server entala num loop com o cliente por cause do CAP)
-					}
-					}
-				}
-
+				if (_debug)
+					std::cout << "[LOG] Data incoming on FD: " << _pollfds[i].fd << std::endl;
+				Server::clientMessage(i, *_clients[_pollfds[i].fd]);
 			}
 		}
 	}

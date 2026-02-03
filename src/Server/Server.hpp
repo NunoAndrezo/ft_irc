@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 00:32:03 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 12:17:54 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ class Server
 		void serverRun();
 		void serverSocketStart();
 		void newClientConnection();
+		void clientMessage(int i, Client &c);
+		void processCommand(Client& client, std::string line);
 
 };
 
