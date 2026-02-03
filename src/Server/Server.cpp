@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/02 19:57:21 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 00:36:06 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,10 +165,12 @@ void addPollfd(std::vector<pollfd>& fds, int fd, short events)
 	fds.push_back(p);
 }
 
-Server::Server(int port, std::string password): _serverPort(port),
-												_serverPassword(password)
+
+Server::Server(int port, std::string password, bool debug):  _serverPort(port),
+															_serverPassword(password),
+															_debug(debug)
 {
-	
+
 }
 
 Server::~Server()
@@ -185,7 +187,8 @@ void Server::newClientConnection()
 	if (client_fd == -1)
 		throw std::runtime_error("Accept failed: " + std::string(strerror(errno)));
 	addPollfd(_pollfds, client_fd, POLLIN | POLLHUP);
-	std::cout << "[LOG] New connection request on FD: " << client_fd<< std::endl;
+	if (_debug)
+		std::cout << "[LOG] New connection request on FD: " << client_fd<< std::endl;
 	char hostname[NI_MAXHOST];
 	int result = getnameinfo((struct sockaddr *)&client, clientSize, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
 	if (result != 0)
@@ -194,11 +197,13 @@ void Server::newClientConnection()
 	_clients.insert(std::make_pair(client_fd, clientObj));
 
 	std::cout << "Client connected!" << std::endl;
-	std::string m = ":ircserv NOTICE * :*** CONNECTED. Please register: ***\r\n";
-	m += ":ircserv NOTICE * :1. PASS <password>\r\n";
-	m += ":ircserv NOTICE * :2. NICK <nickname>\r\n";
-	m += ":ircserv NOTICE * :3. USER <username> 0 * :<realname>\r\n";
-	send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
+	// nn sei se faz sentido mandar isto aqui ja que se manda a pass ao mesmo tempo que se liga
+	// std::string m = ":ircserv NOTICE * :*** CONNECTED. Please register: ***\r\n";
+	// m += ":ircserv NOTICE * :1. PASS <password>\r\n";
+	// m += ":ircserv NOTICE * :2. NICK <nickname>\r\n";
+	// m += ":ircserv NOTICE * :3. USER <username> 0 * :<realname>\r\n";
+	clientObj->reply(RPL_WELCOME, "Connection Established");
+	// send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
 	
 }
 
@@ -207,8 +212,7 @@ void Server::serverSocketStart()
 	_serverSocketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_serverSocketFd == -1)
 	{
-		std::cerr << "Socket creation failed: " << strerror(errno) << std::endl;
-		throw std::runtime_error("Socket creation failed");
+		throw std::runtime_error("Socket creation failed " + std::string(strerror(errno)));
 	}
 	std::cout << "Socket created successfully." << std::endl;
 	struct sockaddr_in server;
@@ -253,7 +257,8 @@ void Server::serverRun()
 	}
 	addPollfd(_pollfds, _serverSocketFd, POLLIN);
 	addPollfd(_pollfds, STDIN_FILENO, POLLIN);
-	std::cout << "[LOG] Server is running. Waiting for connections..." << std::endl;
+	if (_debug)
+		std::cout << "[LOG] Server is running. Waiting for connections..." << std::endl;
 	while (true)
 	{
 		int pollCount = poll(_pollfds.data(), _pollfds.size(), 0);
@@ -261,12 +266,13 @@ void Server::serverRun()
 			throw std::runtime_error("Error: Poll failed" + std::string(strerror(errno)));
 		if (pollCount == 0)
 			continue;
-		std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
+		// std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
 		if (_pollfds[0].revents & POLLIN)
 		{
 			try	
 			{
-				std::cout << "[LOG] New client connection incoming..." << std::endl;
+				if (_debug)
+					std::cout << "[LOG] New client connection incoming..." << std::endl;
 				Server::newClientConnection();
 			}
 			catch(const std::exception& e)
@@ -275,61 +281,68 @@ void Server::serverRun()
 			}
 		}
 		if (_pollfds[1].revents & POLLIN) // read from stdin
-		{
-			char buffer[1024];
+		{	
+			char buffer[BUFSIZ];
 			int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
-			(void)bytes_received;
-			std::cout << buffer << std::endl;		
-			break ;
+			if (bytes_received <= 0)
+				throw std::runtime_error("Error reading from stdin");
+			std::string bufstring(buffer);	
+			if (bufstring.find("EXIT") != std::string::npos)
+				break ;
 			// Check for errors in the read function
 		}
 		for (size_t i = 2; i < _pollfds.size(); ++i)
 		{
-			if (_pollfds[i].revents & POLLIN)
+			if (_pollfds[i].revents & POLLHUP)
 			{
-				char buf[1024];
-				int bytes = recv(_pollfds[i].fd, buf, 1023, 0); // tomaz -- nao percebo porque 1023
-					
-				Client* c = _clients[_pollfds[i].fd];
-					
-				if (bytes <= 0)
-				{
-					std::string name = c->getNickname().empty() ? "Unregistered Client" : c->getNickname();
+					std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
 					std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected/timed out." << std::endl;
 					close(_pollfds[i].fd);
-					_clients.erase(_pollfds[i].fd);
+					_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
 					_pollfds.erase(_pollfds.begin() + i--);
+			}
+			if (_pollfds[i].revents & POLLIN) // a forma como isso esta escrito faz com que ele volte a recomecar o loop se a mensagem recebida for maior que o buffer
+			{
+				char buf[BUFSIZ];
+				// std::cout << "ola" << std::endl;
+				int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
+				Client *c = _clients[_pollfds[i].fd];
+				if (bytes < 0)
+				{
+					throw std::runtime_error("Recv failed: " + std::string(strerror(errno)));
 				}
 				else
 				{
 					buf[bytes] = '\0';
-					c->appendBuffer(buf);
-					size_t pos;
-					while ((pos = c->getBuffer().find_first_of("\r\n")) != std::string::npos) // tomaz -- problema esta aqui penso eu
+				c->appendBuffer(buf);
+				size_t pos;
+				while ((pos = c->getBuffer().find_first_of("\r\n")) != std::string::npos) // tomaz -- problema esta aqui nesse while penso eu
+				{
+					std::string line = c->getBuffer().substr(0, pos);
+					size_t next = c->getBuffer().find_first_not_of("\r\n", pos);
+					if (next == std::string::npos)
+						c->getBuffer().clear();
+					else
+						c->getBuffer().erase(0, next);
+					if (!line.empty())
 					{
-						std::string line = c->getBuffer().substr(0, pos);
-						size_t next = c->getBuffer().find_first_not_of("\r\n", pos);
-
-						if (next == std::string::npos) c->getBuffer().clear();
-							else c->getBuffer().erase(0, next);
-							
-						if (!line.empty())
+						if (line.find("QUIT") == 0) // deviamos tratar o quit como um commando normal
 						{
-							if (line.find("QUIT") == 0)
-							{
-								std::string name = c->getNickname().empty() ? "Unregistered Client" : c->getNickname();
-								std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
-								close(_pollfds[i].fd);
-								_clients.erase(_pollfds[i].fd);
-								_pollfds.erase(_pollfds.begin() + i--);
-								break; 
-							}
-							processCommand(*c, line, _serverPassword, _clients);
-							std::cout << "remaining buffer :" << c->getBuffer() << std::endl;
-							c->clearBuffer(); // Clear buffer after processing
+							std::string name = c->getNickname().empty() ? "Unregistered Client" : c->getNickname();
+							std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
+							close(_pollfds[i].fd);
+							_clients.erase(_pollfds[i].fd);
+							_pollfds.erase(_pollfds.begin() + i--);
+							delete c;
+							break; 
 						}
+						processCommand(*c, line, _serverPassword, _clients);
+						std::cout << "remaining buffer :" << c->getBuffer() << "buffer ate aqui" << std::endl;
+						c->clearBuffer(); // Clear buffer after processing (essa linha esta aqui porque senao o server entala num loop com o cliente por cause do CAP)
+					}
 					}
 				}
+
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/02 19:20:45 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 00:32:03 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <cerrno>
 #include <netdb.h>
 #include <sstream>
+#include <cstdio>
 
 #include "../Client/Client.hpp"
 #include "../utils/IRCmacros.hpp"
@@ -35,6 +36,7 @@ class Server
 	private:
 		const int				_serverPort;
 		const std::string		_serverPassword;
+		bool					_debug;
 		const std::string		_serverHostname;
 
 		int 					_serverSocketFd;
@@ -43,7 +45,7 @@ class Server
 		std::map<int, Client*>	_clients;
 
 	public:
-		Server(int port, std::string password);
+		Server(int port, std::string password, bool debug);
 		~Server();
 		Server(const Server &src);
 		Server &operator=(const Server &src);
