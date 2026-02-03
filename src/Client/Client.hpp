@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/02 23:47:56 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 13:25:49 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ class Client {
 
 		bool		_hasPass;
 		bool		_isRegistered;
+
+		bool		_wasDisconnected;
 
 	public:
 
@@ -81,6 +83,8 @@ class Client {
 		bool getHasPass() const;
 		void setHasPass(const bool status);
 
+		bool getWasDisconnected() const;
+		void setWasDisconnected(const bool status);
 		
 
 		// Buffer Methods

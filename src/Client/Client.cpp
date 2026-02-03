@@ -6,13 +6,13 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/02 19:50:24 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 13:26:05 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(): _fd(-1),
+/* Client::Client(): _fd(-1),
 				_nickname(""),
 				_username(""),
 				_hostname(""),
@@ -20,9 +20,10 @@ Client::Client(): _fd(-1),
 				_realname(""),
 				_hasPass(false),
 				_isRegistered(false)
+				_
 {
 
-}
+} */
 
 Client::Client(int clientFd, std::string serverHostname): _fd(clientFd),
 							_nickname(""),
@@ -32,7 +33,8 @@ Client::Client(int clientFd, std::string serverHostname): _fd(clientFd),
 							_realname(""),
 							_serverHostname(serverHostname),
 							_hasPass(false),
-							_isRegistered(false)
+							_isRegistered(false),
+							_wasDisconnected(false)
 {
 
 }
@@ -161,6 +163,16 @@ bool Client::getHasPass() const
 void Client::setHasPass(const bool status)
 {
 	_hasPass = status;
+}
+
+bool Client::getWasDisconnected() const
+{
+	return _wasDisconnected;
+}
+
+void Client::setWasDisconnected(const bool status)
+{
+	_wasDisconnected = status;
 }
 
 void Client::appendBuffer(const std::string& data)

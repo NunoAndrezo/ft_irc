@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 12:40:13 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 14:02:56 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,11 @@ void Server::processCommand(Client& client, std::string line)
 	{
 		client.reply("PONG", ":pong");
 	}
+	else if (command == "MODE")
+	{
+		// For simplicity, we won't implement channel modes now
+		client.reply(RPL_UMODEIS, ":+i"); // example: user is invisible
+	}
 	else
 	{
 		client.reply(ERR_UNKNOWNCOMMAND, command + " :Unknown command");
@@ -253,6 +258,7 @@ void Server::serverSocketStart()
 void Server::clientMessage(int i, Client &c)
 {
 	char buf[BUFSIZ];
+	bzero(buf, sizeof(buf));
 	int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
 	if (_debug)
 		std::cout << "[LOG] Received message ****" << buf << "****" << std::endl;
@@ -277,6 +283,7 @@ void Server::clientMessage(int i, Client &c)
 			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
 			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
 			c.reply(RPL_QUIT, ":Client quitting");
+			c.setWasDisconnected(true);
 			close(_pollfds[i].fd);
 			_clients.erase(_pollfds[i].fd);
 			_pollfds.erase(_pollfds.begin());
@@ -331,8 +338,23 @@ void Server::serverRun()
 			throw std::runtime_error("Error: Poll failed" + std::string(strerror(errno)));
 		if (pollCount == 0)
 			continue;
-		if (_debug)
+ 		if (_debug)
+		{
 			std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
+			for (size_t i = 0; i < _pollfds.size(); ++i)
+			{
+				if (_pollfds[i].revents != 0)
+				{
+					std::cout << "[LOG] FD " << _pollfds[i].fd << " has events: " << _pollfds[i].revents << std::endl;
+					if (_pollfds[i].revents & POLLIN)
+						std::cout << "[LOG]   - POLLIN event" << std::endl;
+					if (_pollfds[i].revents & POLLHUP)
+						std::cout << "[LOG]   - POLLHUP event" << std::endl;
+					if (_pollfds[i].revents & POLLNVAL)
+						std::cout << "[LOG]   - POLLNVAL event" << std::endl;
+				}
+			}
+		}
 		if (_pollfds[0].revents & POLLIN)
 		{
 			try	
@@ -358,17 +380,22 @@ void Server::serverRun()
 		}
 		for (size_t i = 2; i < _pollfds.size(); ++i)
 		{
+/* 			if (_clients[_pollfds[i].fd]->getWasDisconnected())
+			{
+				continue;
+			} */
 			if (_debug)
 				std::cout << "FD " << _pollfds[i].fd << " revents: " << _pollfds[i].revents << std::endl;
-			if ((_pollfds[i].revents & POLLHUP) == POLLHUP) // nn funciona nao sei porque
+			if (_pollfds[i].revents & POLLHUP) // nn funciona nao sei porque
 			{												//	--> temos que ter uma maneira
 				std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
 				std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected/timed out." << std::endl;
+				_clients[_pollfds[i].fd]->setWasDisconnected(true);
 				close(_pollfds[i].fd);
 				_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
 				_pollfds.erase(_pollfds.begin() + i--);
 			}
-			if ((_pollfds[i].revents & POLLIN) == POLLIN)
+			if (_pollfds[i].revents & POLLIN)
 			{
 				if (_debug)
 					std::cout << "[LOG] Data incoming on FD: " << _pollfds[i].fd << std::endl;
