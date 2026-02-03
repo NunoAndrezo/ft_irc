@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 16:10:37 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 22:07:44 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ void Server::processCommand(Client& client, std::string line)
 		client.reply(RPL_CAP, ":No supported capabilities available");
 		return;
 	}
-
-	// 3. PASS
+	
+	// 3. PASS (must be before bouncer)
 	if (command == "PASS")
 	{
 		if (client.getIsRegistered())
@@ -51,12 +51,13 @@ void Server::processCommand(Client& client, std::string line)
 		}
 		else
 		{
-			client.reply(ERR_PASSWDMISMATCH, ":Password incorrect");
+			client.reply(ERR_PASSWDMISMATCH, ":Password incorrect. Disconnecting.");
+			client.setWasDisconnected(true);
 		}
 		return;
 	}
-
-	// 4. THE BOUNCER
+	
+	// 4. THE BOUNCER - block all commands if no password
 	if (!client.getHasPass())
 	{
 		client.reply(ERR_NOTREGISTERED, ":You must send PASS first");
@@ -176,7 +177,8 @@ void addPollfd(std::vector<pollfd>& fds, int fd, short events)
 
 Server::Server(int port, std::string password, bool debug):  _serverPort(port),
 															_serverPassword(password),
-															_debug(debug)
+															_debug(debug),
+															_serverHostname("TestingServer")
 {
 
 }
@@ -186,73 +188,6 @@ Server::~Server()
 	close(_serverSocketFd);
 }
 
-void Server::newClientConnection()
-{
-	
-	struct sockaddr_in client;
-	socklen_t clientSize = sizeof(client);
-	int client_fd = accept(_serverSocketFd, (sockaddr*)&client, &clientSize);
-	if (client_fd == -1)
-		throw std::runtime_error("Accept failed: " + std::string(strerror(errno)));
-	addPollfd(_pollfds, client_fd, POLLIN | POLLHUP);
-	if (_debug)
-		std::cout << "[LOG] New connection request on FD: " << client_fd<< std::endl;
-	char hostname[NI_MAXHOST];
-	int result = getnameinfo((struct sockaddr *)&client, clientSize, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
-	if (result != 0)
-		throw std::runtime_error(std::string(gai_strerror(result)));
-	Client *clientObj = new Client(client_fd, _serverHostname);
-	_clients.insert(std::make_pair(client_fd, clientObj));
-
-	std::cout << "Client connected!" << std::endl;
-	// nn sei se faz sentido mandar isto aqui ja que se manda a pass ao mesmo tempo que se liga
-	// std::string m = ":ircserv NOTICE * :*** CONNECTED. Please register: ***\r\n";
-	// m += ":ircserv NOTICE * :1. PASS <password>\r\n";
-	// m += ":ircserv NOTICE * :2. NICK <nickname>\r\n";
-	// m += ":ircserv NOTICE * :3. USER <username> 0 * :<realname>\r\n";
-	// clientObj->reply(RPL_WELCOME, "Connection Established");
-	// send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
-	
-}
-
-void Server::serverSocketStart()
-{
-	_serverSocketFd = socket(AF_INET, SOCK_STREAM, 0);
-	if (_serverSocketFd == -1)
-	{
-		throw std::runtime_error("Socket creation failed " + std::string(strerror(errno)));
-	}
-	std::cout << "Socket created successfully." << std::endl;
-	struct sockaddr_in server;
-	memset(&server, 0, sizeof(server));
-	server.sin_family = AF_INET;
-	server.sin_port = htons(_serverPort);
-	server.sin_addr.s_addr = inet_addr("127.0.0.1");
-	int opt = 1;
-	if (setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-	{
-		close(_serverSocketFd);
-		throw std::runtime_error("Setsockopt failed: " + std::string(strerror(errno)));
-	}
-	if (fcntl(_serverSocketFd, F_SETFL, O_NONBLOCK) == -1)
-	{
-		close(_serverSocketFd);
-		throw std::runtime_error("Fcntl failed: " + std::string(strerror(errno)));
-	}
-	if (bind(_serverSocketFd, (sockaddr*)&server, sizeof(server)) == -1)
-	{
-		close(_serverSocketFd);
-		throw std::runtime_error("Bind failed: " + std::string(strerror(errno)));
-	}
-	if (listen(_serverSocketFd, SOMAXCONN) == -1) // SOMAXCONN is the max number of connections allowed in the incomming queue
-	{
-		close(_serverSocketFd);
-		throw std::runtime_error("Listen failed: " + std::string(strerror(errno)));
-	}
-	std::cout << "Server listening on port " << _serverPort << std::endl;
-}
-
-
 
 void Server::clientMessage(int i, Client &c)
 {
@@ -260,10 +195,21 @@ void Server::clientMessage(int i, Client &c)
 	bzero(buf, sizeof(buf));
 	int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
 	if (_debug)
-		std::cout << "[LOG] Received message ****" << buf << "****" << std::endl;
-	if (bytes < 0)
+		std::cout << "[LOG] Received " << bytes << " bytes" << std::endl;
+	if (bytes <= 0)
 	{
-		throw std::runtime_error("Recv failed: " + std::string(strerror(errno)));
+		if (bytes == 0)
+		{
+			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
+			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected." << std::endl;
+		}
+		else
+			std::cerr << "Recv failed: " << std::string(strerror(errno)) << std::endl;
+		c.setWasDisconnected(true);
+		close(_pollfds[i].fd);
+		_clients.erase(_pollfds[i].fd);
+		_pollfds.erase(_pollfds.begin() + i);
+		return;
 	}
 
 	c.appendBuffer(buf);
@@ -285,13 +231,23 @@ void Server::clientMessage(int i, Client &c)
 			c.setWasDisconnected(true);
 			close(_pollfds[i].fd);
 			_clients.erase(_pollfds[i].fd);
-			_pollfds.erase(_pollfds.begin());
+			_pollfds.erase(_pollfds.begin() + i);
 			delete &c;
 			return; 
 		}
 
 		processCommand(c, line);
-		std::cout << "Remaining buffer after processing: '" << c.getBuffer() << "'" << std::endl;
+				
+		// Check if client was disconnected after/during processing commands
+		if (c.getWasDisconnected())
+		{
+			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
+			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") disconnected." << std::endl;
+			close(_pollfds[i].fd);
+			_clients.erase(_pollfds[i].fd);
+			_pollfds.erase(_pollfds.begin() + i);
+			return;
+		}
 	}
 	/* while ((pos = c.getBuffer().find_first_of("\r\n")) != std::string::npos) // tomaz -- problema esta aqui nesse while penso eu
 	{
@@ -315,6 +271,76 @@ void Server::clientMessage(int i, Client &c)
 
 }
 
+
+void Server::newClientConnection()
+{
+	struct sockaddr_in client;
+	socklen_t clientSize = sizeof(client);
+	int client_fd = accept(_serverSocketFd, (sockaddr*)&client, &clientSize);
+	if (client_fd == -1)
+		throw std::runtime_error("Accept failed: " + std::string(strerror(errno)));
+	addPollfd(_pollfds, client_fd, POLLIN | POLLHUP);
+	if (_debug)
+		std::cout << "[LOG] New connection request on FD: " << client_fd<< std::endl;
+	//get client hostname info
+	char hostname[NI_MAXHOST];
+	int result = getnameinfo((struct sockaddr *)&client, clientSize, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+	if (result != 0)
+		throw std::runtime_error(std::string(gai_strerror(result)));
+	Client *clientObj = new Client(client_fd, _serverHostname, hostname, _debug);
+	_clients.insert(std::make_pair(client_fd, clientObj));
+	//client: <hostname>:<fd> has connected
+	std::cout << "Client: " << clientObj->getHostname() << ":" << clientObj->getFd() << " has connected" << std::endl;	// nn sei se faz sentido mandar isto aqui ja que se manda a pass ao mesmo tempo que se liga
+	// std::string m = ":ircserv NOTICE * :*** CONNECTED. Please register: ***\r\n";
+	// m += ":ircserv NOTICE * :1. PASS <password>\r\n";
+	// m += ":ircserv NOTICE * :2. NICK <nickname>\r\n";
+	// m += ":ircserv NOTICE * :3. USER <username> 0 * :<realname>\r\n";
+	// clientObj->reply(RPL_WELCOME, "Connection Established");
+	// send(client_fd, ":server 001 etom :Welcome to the server!\n", 42, 0); // handshake message :
+}
+
+void Server::serverSocketStart()
+{
+	_serverSocketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (_serverSocketFd == -1)
+	{
+		throw std::runtime_error("Socket creation failed " + std::string(strerror(errno)));
+	}
+	std::cout << "Socket created successfully." << std::endl;
+	//make the socket reusable
+	int opt = 1;
+	if (setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+	{
+		close(_serverSocketFd);
+		throw std::runtime_error("Setsockopt failed: " + std::string(strerror(errno)));
+	}
+	//make socket non-blocking
+	if (fcntl(_serverSocketFd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		close(_serverSocketFd);
+		throw std::runtime_error("Fcntl failed: " + std::string(strerror(errno)));
+	}
+	//define server address structure
+	struct sockaddr_in server_addr;
+	memset(&server_addr, 0, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(_serverPort);
+	server_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
+	//bind server socket to server address and port
+	if (bind(_serverSocketFd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1)
+	{
+		close(_serverSocketFd);
+		throw std::runtime_error("Bind failed: " + std::string(strerror(errno)));
+	}
+	//listen for incoming connections
+	if (listen(_serverSocketFd, SOMAXCONN) == -1) // SOMAXCONN is the max number of connections allowed in the incomming queue
+	{
+		close(_serverSocketFd);
+		throw std::runtime_error("Listen failed: " + std::string(strerror(errno)));
+	}
+	std::cout << "Server listening on port " << _serverPort << std::endl;
+}
+
 void Server::serverRun()
 {
 	try
@@ -323,7 +349,7 @@ void Server::serverRun()
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cerr << e.what() << std::endl;
 		throw std::runtime_error("Server startup failed: " + std::string(strerror(errno)));
 	}
 	addPollfd(_pollfds, _serverSocketFd, POLLIN);
@@ -335,9 +361,11 @@ void Server::serverRun()
 		int pollCount = poll(_pollfds.data(), _pollfds.size(), 0);
 		if (pollCount == - 1)
 			throw std::runtime_error("Error: Poll failed" + std::string(strerror(errno)));
+		//if no events occurred, continue
 		if (pollCount == 0)
 			continue;
- 		if (_debug)
+ 		//debug purposes
+		if (_debug)
 		{
 			std::cout << "[LOG] Poll returned " << pollCount << " events." << std::endl;
 			for (size_t i = 0; i < _pollfds.size(); ++i)
@@ -354,6 +382,7 @@ void Server::serverRun()
 				}
 			}
 		}
+		//check for new connections
 		if (_pollfds[0].revents & POLLIN)
 		{
 			try	
@@ -365,18 +394,22 @@ void Server::serverRun()
 			catch(const std::exception& e)
 			{
 				std::cerr << e.what() << std::endl;
+				continue;
 			}
 		}
+		//check for stdin input (server commands)
 		if (_pollfds[1].revents & POLLIN) // read from stdin
 		{	
 			char buffer[BUFSIZ];
 			int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
 			if (bytes_received <= 0)
 				throw std::runtime_error("Error reading from stdin");
-			std::string bufstring(buffer);	
+			std::string bufstring(buffer);
+			//exit server on "EXIT" command
 			if (bufstring.find("EXIT") != std::string::npos)
 				break ;
 		}
+		//check for client messages
 		for (size_t i = 2; i < _pollfds.size(); ++i)
 		{
 /* 			if (_clients[_pollfds[i].fd]->getWasDisconnected())
@@ -385,6 +418,13 @@ void Server::serverRun()
 			} */
 			if (_debug)
 				std::cout << "FD " << _pollfds[i].fd << " revents: " << _pollfds[i].revents << std::endl;
+			if (_clients.find(_pollfds[i].fd) == _clients.end())
+			{
+				if (_debug)
+					std::cout << "[LOG] FD " << _pollfds[i].fd << " not found in clients map, skipping." << std::endl;
+				continue;
+			}
+			//check for disconnections on client side
 			if (_pollfds[i].revents & POLLHUP) // nn funciona nao sei porque
 			{												//	--> temos que ter uma maneira
 				std::string name = _clients[_pollfds[i].fd]->getNickname().empty() ? "Unregistered Client" : _clients[_pollfds[i].fd]->getNickname();
@@ -394,6 +434,7 @@ void Server::serverRun()
 				_clients.erase(_pollfds[i].fd); // tomaz -- acho que podemos deixar ate para a destruicao do server e assim faz-se delete tb
 				_pollfds.erase(_pollfds.begin() + i--);
 			}
+			//check for incoming data client side
 			if (_pollfds[i].revents & POLLIN)
 			{
 				if (_debug)

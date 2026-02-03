@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 15:41:44 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 21:46:31 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "../utils/IRCmacros.hpp"
 
 // USER	<username>	<hostname>	<servername>	:<realname>
-// USER	etom		etom		0.0.0.0			:etom
+// USER	etom		IP do user	IP do servidor		:etom
 
 
 
@@ -34,9 +34,8 @@ class Client {
 
 		int			_fd;
 		std::string	_buffer; // tentar usar class mesagem como buffer
-		
+	
 		std::string	_nickname;
-
 		std::string	_username;
 		std::string	_hostname;
 		std::string	_servername;
@@ -48,11 +47,12 @@ class Client {
 		bool		_isRegistered;
 
 		bool		_wasDisconnected;
+		bool		_debug;
 
 	public:
 
 		Client();
-		Client(int fd, std::string serverHostname);
+		Client(int fd, std::string serverHostname, std::string hostname, bool debug);
 		~Client();
 		Client(const Client& other);
 		Client& operator=(const Client& other);

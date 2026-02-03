@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 13:26:05 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 21:43:01 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,17 @@
 
 } */
 
-Client::Client(int clientFd, std::string serverHostname): _fd(clientFd),
+Client::Client(int clientFd, std::string serverHostname, std::string hostname, bool debug): _fd(clientFd),
 							_nickname(""),
 							_username(""),
-							_hostname(""),
+							_hostname(hostname),
 							_servername(""),
 							_realname(""),
 							_serverHostname(serverHostname),
 							_hasPass(false),
 							_isRegistered(false),
-							_wasDisconnected(false)
+							_wasDisconnected(false),
+							_debug(debug)
 {
 
 }
@@ -68,10 +69,13 @@ Client& Client::operator=(const Client& other)
 
 void Client::reply(std::string clientCode, std::string message) // example: ": " + servername +  + ":" + "possible message" + "\r\n";
 {
+	// Format ":<server_hostname> <code> <nickname> :<message>\r\n"
 	std::string nick = _nickname.empty() ? "unregistered " : _nickname;
 	std::string replyMessage = ":" + _serverHostname + " " + clientCode + " " + nick + " " + message + CRLF;
-
-	std::cout << "Client Reply: " << replyMessage << std::endl; // for debugging;
+	//debugging print
+	if (_debug)
+		std::cout << "Client Reply" << replyMessage << std::endl; // for debugging;
+	//send back to server
 	send(_fd, replyMessage.c_str(), replyMessage.length(), 0);
 }
 
