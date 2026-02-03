@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 13:25:49 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 15:41:44 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		etom		0.0.0.0			:etom
+
+
+
 // int result = getnameinfo((struct sockaddr *)&client_address, client_address_size, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
 
 class Client {
@@ -31,7 +34,9 @@ class Client {
 
 		int			_fd;
 		std::string	_buffer; // tentar usar class mesagem como buffer
+		
 		std::string	_nickname;
+
 		std::string	_username;
 		std::string	_hostname;
 		std::string	_servername;

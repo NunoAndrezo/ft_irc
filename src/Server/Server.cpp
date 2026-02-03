@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 14:02:56 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/03 16:10:37 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void Server::processCommand(Client& client, std::string line)
 	if (command == "CAP")
 	{
 		client.reply(RPL_CAP, ":No supported capabilities available");
-		// send(client.getFd(), "CAP * LS :\r\n", 12, 0);
 		return;
 	}
 
@@ -345,7 +344,7 @@ void Server::serverRun()
 			{
 				if (_pollfds[i].revents != 0)
 				{
-					std::cout << "[LOG] FD " << _pollfds[i].fd << " has events: " << _pollfds[i].revents << std::endl;
+					std::cout << "[LOG] FD " << _pollfds[i].fd << ":i:" << i << " has events: " << _pollfds[i].revents << std::endl;
 					if (_pollfds[i].revents & POLLIN)
 						std::cout << "[LOG]   - POLLIN event" << std::endl;
 					if (_pollfds[i].revents & POLLHUP)
