@@ -6,22 +6,19 @@
 #    By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/02 15:24:08 by toferrei          #+#    #+#              #
-#    Updated: 2026/02/02 16:34:22 by toferrei         ###   ########.fr        #
+#    Updated: 2026/02/04 14:40:01 by toferrei         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	ircserver
 
-
 # Directories
 SRC			=	src/
-CMD_DIR		=	Commands/
 
 SOURCE		=	$(SRC)main.cpp \
 				$(SRC)Channel/Channel.cpp \
 				$(SRC)Client/Client.cpp \
 				$(SRC)Server/Server.cpp
-# 				$(SRC)$(CMD_DIR)Commands.cpp \ #
 				
 OBJ_DIR		=	Objects/
 

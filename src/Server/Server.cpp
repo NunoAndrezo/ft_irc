@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 14:34:59 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/04 15:45:20 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,31 @@ Server::~Server()
 	close(_serverSocketFd);
 }
 
+Server::Server(const Server &src): _serverPort(src._serverPort),
+							_serverPassword(src._serverPassword),
+							_debug(src._debug),
+							_serverHostname(src._serverHostname),
+							_serverSocketFd(src._serverSocketFd),
+							_pollfds(src._pollfds),
+							_clients(src._clients),
+							_channels(src._channels)
+{
+
+}
+
+Server &Server::operator=(const Server &src)
+{
+	if (this != &src)
+	{
+		// _serverPort, _serverPassword, _serverHostname are const, cannot be assigned
+		_debug = src._debug;
+		_serverSocketFd = src._serverSocketFd;
+		_pollfds = src._pollfds;
+		_clients = src._clients;
+		_channels = src._channels;
+	}
+	return *this;
+}
 
 void Server::clientMessage(int i, Client &c)
 {

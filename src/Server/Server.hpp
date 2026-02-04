@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 14:30:47 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/04 15:44:16 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,11 @@
 
 
 #include "../Client/Client.hpp"
+#include "../Channel/Channel.hpp"
 #include "../utils/IRCmacros.hpp"
 #include "../utils/stdoutColors.hpp"
 
-class Client;
+class Channel;
 
 class Server
 {
@@ -45,6 +46,7 @@ class Server
 
 		std::vector<pollfd>		_pollfds;
 		std::map<int, Client*>	_clients;
+		std::vector<Channel*>	_channels;
 
 	public:
 		Server(int port, std::string password, bool debug);
