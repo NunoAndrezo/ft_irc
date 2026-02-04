@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 21:46:31 by marvin           ###   ########.fr       */
+/*   Updated: 2026/02/04 14:12:53 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 
 #include "../utils/IRCmacros.hpp"
+#include "../utils/stdoutColors.hpp"
 
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		IP do user	IP do servidor		:etom
@@ -48,6 +49,8 @@ class Client {
 
 		bool		_wasDisconnected;
 		bool		_debug;
+
+		int			_userMode; // 0x0001 invisible, 0x0010 operator.
 
 	public:
 
@@ -90,7 +93,9 @@ class Client {
 
 		bool getWasDisconnected() const;
 		void setWasDisconnected(const bool status);
-		
+
+		int getUserMode() const;
+		void setUserMode(const int mode);		
 
 		// Buffer Methods
 

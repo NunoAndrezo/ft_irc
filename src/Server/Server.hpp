@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 14:00:07 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/04 14:30:47 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 
 #include "../Client/Client.hpp"
 #include "../utils/IRCmacros.hpp"
+#include "../utils/stdoutColors.hpp"
 
 class Client;
 
@@ -56,6 +57,9 @@ class Server
 		void newClientConnection();
 		void clientMessage(int i, Client &c);
 		void processCommand(Client& client, std::string line);
+
+		bool hasClient(std::string nickname);
+		Client* getClientByNickname(std::string nickname);
 
 };
 

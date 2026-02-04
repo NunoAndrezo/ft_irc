@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 21:43:01 by marvin           ###   ########.fr       */
+/*   Updated: 2026/02/04 14:33:41 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ Client::Client(int clientFd, std::string serverHostname, std::string hostname, b
 							_hasPass(false),
 							_isRegistered(false),
 							_wasDisconnected(false),
-							_debug(debug)
+							_debug(debug),
+							_userMode(0)
 {
 
 }
@@ -59,10 +60,14 @@ Client& Client::operator=(const Client& other)
 		_nickname = other._nickname;
 		_username = other._username;
 		_hostname = other._hostname;
-		_realname = other._realname;
 		_servername = other._servername;
+		_realname = other._realname;
+		_serverHostname = other._serverHostname;
 		_isRegistered = other._isRegistered;
 		_hasPass = other._hasPass;
+		_wasDisconnected = other._wasDisconnected;
+		_debug = other._debug;
+		_userMode = other._userMode;
 	}
 	return *this;
 }
@@ -74,7 +79,7 @@ void Client::reply(std::string clientCode, std::string message) // example: ": "
 	std::string replyMessage = ":" + _serverHostname + " " + clientCode + " " + nick + " " + message + CRLF;
 	//debugging print
 	if (_debug)
-		std::cout << "Client Reply" << replyMessage << std::endl; // for debugging;
+		std::cout << FBLU("[Log] Client Reply ") << replyMessage.substr(0, replyMessage.length() - 2) << std::endl; // for debugging;
 	//send back to server
 	send(_fd, replyMessage.c_str(), replyMessage.length(), 0);
 }
@@ -177,6 +182,16 @@ bool Client::getWasDisconnected() const
 void Client::setWasDisconnected(const bool status)
 {
 	_wasDisconnected = status;
+}
+
+int Client::getUserMode() const
+{
+	return _userMode;
+}
+
+void Client::setUserMode(const int mode)
+{
+	_userMode |= mode;
 }
 
 void Client::appendBuffer(const std::string& data)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/03 23:37:49 by marvin           ###   ########.fr       */
+/*   Updated: 2026/02/04 14:34:59 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,10 @@ void Server::processCommand(Client& client, std::string line)
 			client.reply(ERR_NONICKNAMEGIVEN, ":No nickname given");
 			return;
 		}
-		for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		if (Server::hasClient(nick))
 		{
-			if (it->second->getNickname() == nick && it->first != client.getFd())
-			{
-				client.reply(ERR_NICKNAMEINUSE, nick + " :Nickname is already in use");
-				return;
-			}
+			client.reply(ERR_NICKNAMEINUSE, nick + " :Nickname is already in use");
+			return;
 		}
 		client.setNickname(nick);
 		client.reply(RPL_NOTICE, "Step 2/3: Nickname saved. Now send USER <username> 0 * :<realname>.");
@@ -119,18 +116,12 @@ void Server::processCommand(Client& client, std::string line)
 		if (pos != std::string::npos)
 		{
 			std::string msg = line.substr(pos);
-			bool found = false;
-			for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+			if (Server::hasClient(target))
 			{
-				if (it->second->getNickname() == target)
-				{
-					std::string fullMsg = ":" + client.getNickname() + " PRIVMSG " + target + " " + msg + "\r\n";
-					send(it->second->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
-					found = true;
-					break;
-				}
+				std::string fullMsg = ":" + client.getNickname() + " PRIVMSG " + target + " " + msg + "\r\n";
+				send(Server::getClientByNickname(target)->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
 			}
-			if (!found)
+			else
 				client.reply(ERR_NOSUCHNICK, target + " :No such nick");
 		}
 	}
@@ -140,8 +131,15 @@ void Server::processCommand(Client& client, std::string line)
 	}
 	else if (command == "MODE")
 	{
-		// For simplicity, we won't implement channel modes now
-		client.reply(RPL_UMODEIS, ":+i"); // example: user is invisible
+		std::string target, mode;
+		ss >> target;
+		ss >> mode;
+		std::cout << "target: " << target << " mode: " << mode << std::endl;
+		if (Server::hasClient(target))
+		{
+			client.setUserMode(0x0001); // example: set invisible mode
+			client.reply(RPL_UMODEIS, ":+i"); // example: user is invisible
+		}
 	}
 	else
 	{
@@ -235,7 +233,8 @@ void Server::clientMessage(int i, Client &c)
 			delete &c;
 			return; 
 		}
-
+		if (_debug)
+			std::cout << FYEL("[LOG] Processing command from FD ") << _pollfds[i].fd << ": " << line << std::endl;
 		processCommand(c, line);
 				
 		// Check if client was disconnected after/during processing commands
@@ -433,4 +432,20 @@ void Server::serverRun()
 			}
 		}
 	}
+}
+
+bool Server::hasClient(std::string nickname)
+{
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		if (it->second->getNickname() == nickname)
+			return true;
+	return false;
+}
+
+Client *Server::getClientByNickname(std::string nickname)
+{
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		if (it->second->getNickname() == nickname)
+			return it->second;
+	return NULL;
 }
