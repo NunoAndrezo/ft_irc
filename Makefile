@@ -6,7 +6,7 @@
 #    By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/02 15:24:08 by toferrei          #+#    #+#              #
-#    Updated: 2026/02/04 14:40:01 by toferrei         ###   ########.fr        #
+#    Updated: 2026/02/04 16:48:33 by toferrei         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,11 +14,21 @@ NAME		=	ircserver
 
 # Directories
 SRC			=	src/
+SRV 		=	Server/
+CMD			=	commands/
 
 SOURCE		=	$(SRC)main.cpp \
 				$(SRC)Channel/Channel.cpp \
 				$(SRC)Client/Client.cpp \
-				$(SRC)Server/Server.cpp
+				$(SRC)$(SRV)Server.cpp \
+				$(SRC)$(SRV)commandHandler.cpp \
+				$(SRC)$(SRV)$(CMD)cap.cpp \
+				$(SRC)$(SRV)$(CMD)pass.cpp \
+				$(SRC)$(SRV)$(CMD)nick.cpp \
+				$(SRC)$(SRV)$(CMD)user.cpp \
+				$(SRC)$(SRV)$(CMD)privmsg.cpp \
+				$(SRC)$(SRV)$(CMD)ping.cpp \
+				$(SRC)$(SRV)$(CMD)mode.cpp
 				
 OBJ_DIR		=	Objects/
 

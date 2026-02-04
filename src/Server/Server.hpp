@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 15:44:16 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/04 16:37:20 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,24 @@ class Server
 		void serverSocketStart();
 		void newClientConnection();
 		void clientMessage(int i, Client &c);
-		void processCommand(Client& client, std::string line);
-
+		
 		bool hasClient(std::string nickname);
 		Client* getClientByNickname(std::string nickname);
+		
+		// commands
+		
+		void processCommand(Client& client, std::string line);
+
+		void cmdCap(Client& client);
+		void cmdPass(Client& client, std::stringstream& ss);
+		void cmdNick(Client& client, std::stringstream& ss);
+		void cmdUser(Client& client, std::stringstream& ss);
+		void cmdPrivmsg(Client& client, std::string line, std::stringstream& ss);
+		void cmdPing(Client& client, std::stringstream& ss);
+		void cmdMode(Client& client, std::stringstream& ss);
 
 };
+
+void addPollfd(std::vector<pollfd>& fds, int fd, short events);
 
 #endif
