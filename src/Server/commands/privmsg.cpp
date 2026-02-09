@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:34:31 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 20:20:24 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 20:43:24 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ void Server::cmdPrivmsg(Client& client, std::string line, std::stringstream& ss)
 		}
 		else if (Server::getChannelByName(target)) // target is a channel
 		{
-			for (std::map<Client *, bool>::iterator it = Server::getChannelByName(target)->getMembers().begin(); it != Server::getChannelByName(target)->getMembers().end(); ++it)
+			std::map<Client *, bool> members = Server::getChannelByName(target)->getMembers();
+			for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end(); ++it)
 			{
 				Client* member = it->first; // nn sei se isto esta certo, so para testar
 				if (member->getNickname() != client.getNickname()) // dont send message to sender

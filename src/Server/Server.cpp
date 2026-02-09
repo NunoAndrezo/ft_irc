@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 18:04:51 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 21:06:54 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,12 +235,8 @@ void Server::serverRun()
 		//check for stdin input (server commands)
 		if (_pollfds[1].revents & POLLIN) // read from stdin
 		{	
-			char buffer[BUFSIZ];
-			int bytes_received = read(STDIN_FILENO, buffer, sizeof(buffer));
-			if (bytes_received <= 0)
-				throw std::runtime_error("Error reading from stdin");
-			std::string bufstring(buffer);
-			//exit server on "EXIT" command
+			std::string bufstring;
+			std::getline(std::cin, bufstring);
 			if (bufstring.find("EXIT") != std::string::npos)
 				break ;
 		}
