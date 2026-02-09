@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:37:20 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 19:07:13 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <map>
 #include <sys/socket.h>
+#include <poll.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -73,9 +74,20 @@ class Server
 		void cmdPrivmsg(Client& client, std::string line, std::stringstream& ss);
 		void cmdPing(Client& client, std::stringstream& ss);
 		void cmdMode(Client& client, std::stringstream& ss);
+		void cmdJoin(Client &client, std::stringstream &ss);
+		void cmdInvite(Client& client, std::stringstream& ss);
+
+		// Fx
+
+		void addPollfd(std::vector<pollfd>& fds, int fd, short events);
+
+		Channel* getChannelByName(std::string name); // return null if not found
+
+
+		
+
 
 };
 
-void addPollfd(std::vector<pollfd>& fds, int fd, short events);
 
 #endif

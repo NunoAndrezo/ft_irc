@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:00:22 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 20:06:45 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 Channel::Channel(std::string name, bool debug): _name(name),
 													_topic(""),
 													_password(""),
-													_modes(0),
+													_userLimit(0),
+													_modes(MD_INV),
 													_debug(debug)
 {
 
@@ -30,6 +31,7 @@ Channel::Channel(const Channel &other): _name(other._name),
 										_topic(other._topic),
 										_password(other._password),
 										_members(other._members),
+										_userLimit(other._userLimit),
 										_modes(other._modes),
 										_debug(other._debug)
 
@@ -45,6 +47,7 @@ Channel &Channel::operator=(const Channel &other)
 		_topic = other._topic;
 		_password = other._password;
 		_members = other._members;
+		_userLimit = other._userLimit;
 		_modes = other._modes;
 		_debug = other._debug;
 	}
@@ -74,6 +77,16 @@ std::string Channel::getPassword() const
 void Channel::setPassword(const std::string &password)
 {
 	_password = password;
+}
+
+int Channel::getUserLimit() const
+{
+	return _userLimit;
+}
+
+void Channel::setUserLimit(int limit)
+{
+	_userLimit = limit;
 }
 
 int Channel::getModes() const
@@ -111,10 +124,10 @@ void Channel::removeMember(Client *client)
 	_members.erase(client);
 }
 
-bool Channel::findMember(Client *client) const
+Client *Channel::findMember(Client *client) const
 {
 	std::map<Client*, bool>::const_iterator it = _members.find(client);
-	return it != _members.end();
+	return it != _members.end() ? it->first : NULL;
 }
 
 void Channel::setMemberAsOperator(Client *client)
@@ -129,6 +142,12 @@ void Channel::unsetMemberAsOperator(Client *client)
 	std::map<Client*, bool>::iterator it = _members.find(client);
 	if (it != _members.end())
 		it->second = false;
+}
+
+bool Channel::isMemberOperator(Client *client) const
+{
+	std::map<Client*, bool>::const_iterator it = _members.find(client);
+	return it != _members.end() ? it->second : false;
 }
 
 int Channel::getOperatorsCount() const
@@ -149,7 +168,8 @@ std::vector<std::string> Channel::getInviteList() const
 
 void Channel::addToInviteList(const std::string &nickname)
 {
-	_inviteList.push_back(nickname);
+	if (!Channel::isInInviteList(nickname))
+		_inviteList.push_back(nickname);
 }
 
 void Channel::removeFromInviteList(const std::string &nickname)

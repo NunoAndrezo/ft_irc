@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:15:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:47:28 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 20:09:41 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,14 @@ void Server::processCommand(Client& client, std::string line)
 	else if (command == "MODE")
 	{
 		cmdMode(client, ss);
+	}
+	else if (command == "JOIN")
+	{
+		cmdJoin(client, ss);
+	}
+	else if (command == "INVITE")
+	{
+		cmdInvite(client, ss);
 	}
 	else
 	{

@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:01:58 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 19:53:35 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 
 #define MD_INV		0x0001 // invite only
 #define MD_TOPIC	0x0002 // topic command to
-#define MD_PASSWORD_PROT	0x0004
-#define MD_USR_LIM		0x0008
+#define MD_PASSWORD_PROT	0x0004 // password flag
+#define MD_USR_LIM		0x0008 // user limit flag
 
 class Server;
 
@@ -36,6 +36,7 @@ class Channel
 		std::string _password;
 		std::map<Client*, bool> _members; // bool indicates if member is operator
 		std::vector<std::string> _inviteList;
+		int _userLimit; // only relevant if MD_USR_LIM is set
 
 		int _modes; // bitmask for channel modes
 		bool _debug;
@@ -54,6 +55,9 @@ class Channel
 		std::string getPassword() const;
 		void setPassword(const std::string &password);
 
+		int getUserLimit() const;
+		void setUserLimit(int limit);
+
 		int getModes() const;
 		void setModes(int modes);
 		void addMode(int mode);
@@ -62,9 +66,10 @@ class Channel
 		std::map<Client*, bool> getMembers() const;
 		void addMember(Client *client);
 		void removeMember(Client *client);
-		bool findMember(Client *client) const;
+		Client *findMember(Client *client) const;
 		void setMemberAsOperator(Client *client);
 		void unsetMemberAsOperator(Client *client);
+		bool isMemberOperator(Client *client) const;
 		int getOperatorsCount() const;
 
 		std::vector<std::string> getInviteList() const;

@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 14:12:53 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 18:23:08 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 
 #include "../utils/IRCmacros.hpp"
 #include "../utils/stdoutColors.hpp"
+
+#define USER_MODE_INVISIBLE 0x0001
 
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		IP do user	IP do servidor		:etom

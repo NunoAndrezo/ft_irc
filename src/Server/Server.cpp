@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:18:20 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/09 18:04:51 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,13 @@ void Server::clientMessage(int i, Client &c)
 	bzero(buf, sizeof(buf));
 	int bytes = recv(_pollfds[i].fd, buf, sizeof(buf), 0);
 	if (_debug)
-		std::cout << "[LOG] Received " << bytes << " bytes" << std::endl;
+		std::cout << FRED("[LOG] Received ") << bytes << " bytes" << std::endl;
 	if (bytes <= 0)
 	{
 		if (bytes == 0)
 		{
 			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
-			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has disconnected." << std::endl;
+			std::cout << FRED("[LOG] ") << name << " (FD " << _pollfds[i].fd << ") has disconnected." << std::endl;
 		}
 		else
 			std::cerr << "Recv failed: " << std::string(strerror(errno)) << std::endl;
@@ -286,11 +286,21 @@ Client *Server::getClientByNickname(std::string nickname)
 	return NULL;
 }
 
-void addPollfd(std::vector<pollfd>& fds, int fd, short events)
+void Server::addPollfd(std::vector<pollfd>& fds, int fd, short events)
 {
 	pollfd p;
 	p.fd = fd;
 	p.events = events;
 	p.revents = 0;
 	fds.push_back(p);
+}
+
+Channel *Server::getChannelByName(std::string name)
+{
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		if (_channels[i]->getName() == name)
+			return _channels[i];
+	}
+	return NULL;
 }

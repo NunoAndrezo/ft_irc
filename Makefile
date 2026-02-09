@@ -6,7 +6,7 @@
 #    By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/02 15:24:08 by toferrei          #+#    #+#              #
-#    Updated: 2026/02/04 16:48:33 by toferrei         ###   ########.fr        #
+#    Updated: 2026/02/09 20:10:03 by toferrei         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,9 @@ SOURCE		=	$(SRC)main.cpp \
 				$(SRC)$(SRV)$(CMD)user.cpp \
 				$(SRC)$(SRV)$(CMD)privmsg.cpp \
 				$(SRC)$(SRV)$(CMD)ping.cpp \
-				$(SRC)$(SRV)$(CMD)mode.cpp
+				$(SRC)$(SRV)$(CMD)mode.cpp \
+				$(SRC)$(SRV)$(CMD)join.cpp \
+				$(SRC)$(SRV)$(CMD)invite.cpp
 				
 OBJ_DIR		=	Objects/
 
