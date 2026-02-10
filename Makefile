@@ -6,7 +6,7 @@
 #    By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/02 15:24:08 by toferrei          #+#    #+#              #
-#    Updated: 2026/02/09 20:10:03 by toferrei         ###   ########.fr        #
+#    Updated: 2026/02/10 12:27:50 by toferrei         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,8 @@ SOURCE		=	$(SRC)main.cpp \
 				$(SRC)$(SRV)$(CMD)ping.cpp \
 				$(SRC)$(SRV)$(CMD)mode.cpp \
 				$(SRC)$(SRV)$(CMD)join.cpp \
-				$(SRC)$(SRV)$(CMD)invite.cpp
+				$(SRC)$(SRV)$(CMD)invite.cpp \
+				$(SRC)$(SRV)$(CMD)kick.cpp
 				
 OBJ_DIR		=	Objects/
 

@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:15:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 20:09:41 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:27:19 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,13 @@ void Server::processCommand(Client& client, std::string line)
 	{
 		cmdNick(client, ss);
 	} 
-	else if (command == "USER")
+	else if (command == "USER") // after this does user always need to be indetified and registered?
 	{
 		cmdUser(client, ss);
 	}
+
+// maybe do the registerer check here?
+
 	else if (command == "PRIVMSG")
 	{
 		cmdPrivmsg(client, line, ss);
@@ -61,6 +64,10 @@ void Server::processCommand(Client& client, std::string line)
 	else if (command == "INVITE")
 	{
 		cmdInvite(client, ss);
+	}
+	else if (command == "KICK")
+	{
+		cmdKick(client, ss);
 	}
 	else
 	{
