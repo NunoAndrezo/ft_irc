@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:34:31 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 21:15:25 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:53:37 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,7 @@ void Server::cmdPrivmsg(Client& client, std::string line, std::stringstream& ss)
 		}
 		else if (Server::getChannelByName(target)) // target is a channel
 		{
-			std::map<Client *, bool> members = Server::getChannelByName(target)->getMembers();
-			for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end(); ++it)
-			{
-				Client* member = it->first; // nn sei se isto esta certo, so para testar
-				if (member->getNickname() != client.getNickname()) // dont send message to sender
-				{
-					std::string fullMsg = ":" + client.getNickname() + " PRIVMSG " + target + " " + msg + "\r\n";
-					send(member->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
-				}
-			}
-
+			Server::getChannelByName(target)->broadcastMessage(msg, &client);
 		}
 		else
 			client.reply(ERR_NOSUCHNICK, target + " :No such nick");

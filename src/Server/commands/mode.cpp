@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:34:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:48:04 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 14:35:44 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,6 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 		client.setUserMode(0x0001); // example: set invisible mode
 		client.reply(RPL_UMODEIS, ":+i"); // example: user is invisible
 	}
+	//  se for canal
+	//fazer outras cenas
 }

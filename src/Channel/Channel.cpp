@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 20:06:45 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:53:07 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,4 +182,17 @@ void Channel::removeFromInviteList(const std::string &nickname)
 bool Channel::isInInviteList(const std::string &nickname) const
 {
 	return std::find(_inviteList.begin(), _inviteList.end(), nickname) != _inviteList.end();
+}
+
+void Channel::broadcastMessage(const std::string &message, Client *sender) const
+{
+	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+	{
+		Client* member = it->first;
+		if (member->getNickname() != sender->getNickname()) // dont send message to sender
+		{
+			std::string fullMsg = ":" + sender->getNickname() + " PRIVMSG " + _name + " " + message + "\r\n";
+			send(member->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
+		}
+	}
 }

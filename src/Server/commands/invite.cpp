@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/09 19:06:47 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 20:22:20 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 14:36:29 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void Server::cmdInvite(Client& client, std::stringstream& ss)
 		}
 		client.reply(RPL_INVITING, targetNickname + " " + channelName);
 		channel->addToInviteList(targetNickname); // wont add if already in list, so no need to check if user is already invited
+		Server::getClientByNickname(targetNickname)->reply(RPL_INVITED, "You were invited to " + channelName);
 		
 
 		

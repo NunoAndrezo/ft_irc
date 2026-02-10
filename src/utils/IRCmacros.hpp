@@ -54,6 +54,7 @@
 **  Invite Command
 */
 # define RPL_INVITING               "341" // <client> <nick> <channel>
+# define RPL_INVITED				"345" // <client> <channel>
 
 /*
 **  Whois Command

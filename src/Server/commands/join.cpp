@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/09 17:45:35 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 20:14:27 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:30:11 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,6 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 	}
 	else
 	{
-        client.reply(ERR_NOTREGISTERED, ":You have not registered");
+		client.reply(ERR_NOTREGISTERED, ":You have not registered");
 	}
 }

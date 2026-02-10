@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:28:23 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:32:42 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ class Server
 		void cmdNick(Client& client, std::stringstream& ss);
 		void cmdUser(Client& client, std::stringstream& ss);
 		void cmdPrivmsg(Client& client, std::string line, std::stringstream& ss);
-		void cmdPing(Client& client, std::stringstream& ss);
 		void cmdMode(Client& client, std::stringstream& ss);
 		void cmdJoin(Client &client, std::stringstream &ss);
 		void cmdInvite(Client& client, std::stringstream& ss);

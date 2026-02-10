@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 19:53:35 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:50:53 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ class Channel
 		void addToInviteList(const std::string &nickname);
 		void removeFromInviteList(const std::string &nickname);
 		bool isInInviteList(const std::string &nickname) const;
+
+		void broadcastMessage(const std::string &message, Client *sender) const;
 };
 
 

@@ -1,0 +1,129 @@
+C==24112==
+==24112== Process terminating with default action of signal 2 (SIGINT)
+==24112==    at 0x4C274C4: poll (poll.c:29)
+==24112==    by 0x115064: Server::serverRun() (Server.cpp:196)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== HEAP SUMMARY:
+==24112==     in use at exit: 76,122 bytes in 13 blocks
+==24112==   total heap usage: 383 allocs, 370 frees, 89,907 bytes allocated
+==24112==
+==24112== 8 bytes in 1 blocks are still reachable in loss record 1 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x11A4F7: std::__new_allocator<Channel*>::allocate(unsigned long, void const*) (new_allocator.h:151)
+==24112==    by 0x11899E: allocate (alloc_traits.h:140)
+==24112==    by 0x11899E: std::_Vector_base<Channel*, std::allocator<Channel*> >::_M_allocate(unsigned long) (stl_vector.h:381)
+==24112==    by 0x11EA25: std::vector<Channel*, std::allocator<Channel*> >::_M_realloc_insert(__gnu_cxx::__normal_iterator<Channel**, std::vector<Channel*, std::allocator<Channel*> > >, Channel* const&) (vector.tcc:459)
+==24112==    by 0x11E93B: std::vector<Channel*, std::allocator<Channel*> >::push_back(Channel* const&) (stl_vector.h:1292)
+==24112==    by 0x11DEA5: Server::cmdJoin(Client&, std::__cxx11::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) (join.cpp:37)
+==24112==    by 0x11B5DC: Server::processCommand(Client&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (commandHandler.cpp:62)
+==24112==    by 0x113A6F: Server::clientMessage(int, Client&) (Server.cpp:102)
+==24112==    by 0x11578E: Server::serverRun() (Server.cpp:263)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 32 bytes in 1 blocks are still reachable in loss record 2 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x11A3B5: std::__new_allocator<pollfd>::allocate(unsigned long, void const*) (new_allocator.h:151)
+==24112==    by 0x118668: allocate (alloc_traits.h:140)
+==24112==    by 0x118668: std::_Vector_base<pollfd, std::allocator<pollfd> >::_M_allocate(unsigned long) (stl_vector.h:381)
+==24112==    by 0x117EBF: std::vector<pollfd, std::allocator<pollfd> >::_M_realloc_insert(__gnu_cxx::__normal_iterator<pollfd*, std::vector<pollfd, std::allocator<pollfd> > >, pollfd const&) (vector.tcc:459)
+==24112==    by 0x116C77: std::vector<pollfd, std::allocator<pollfd> >::push_back(pollfd const&) (stl_vector.h:1292)
+==24112==    by 0x115D54: Server::addPollfd(std::vector<pollfd, std::allocator<pollfd> >&, int, short) (Server.cpp:291)
+==24112==    by 0x1142AE: Server::newClientConnection() (Server.cpp:125)
+==24112==    by 0x11545A: Server::serverRun() (Server.cpp:227)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 42 bytes in 1 blocks are still reachable in loss record 3 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x49C870E: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+==24112==    by 0x49CA04F: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+==24112==    by 0x112C7A: Client::appendBuffer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Client.cpp:199)
+==24112==    by 0x1134F6: Server::clientMessage(int, Client&) (Server.cpp:77)
+==24112==    by 0x11578E: Server::serverRun() (Server.cpp:263)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 48 bytes in 1 blocks are still reachable in loss record 4 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x111BCC: std::__new_allocator<std::_Rb_tree_node<std::pair<Client* const, bool> > >::allocate(unsigned long, void const*) (new_allocator.h:151)
+==24112==    by 0x111B57: allocate (alloc_traits.h:140)
+==24112==    by 0x111B57: std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_M_get_node() (stl_tree.h:563)
+==24112==    by 0x111A01: std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_M_create_node(std::pair<Client* const, bool> const&) (stl_tree.h:585)
+==24112==    by 0x111727: std::_Rb_tree_node<std::pair<Client* const, bool> >* std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_Alloc_node::operator()<std::pair<Client* const, bool> >(std::pair<Client* const, bool> const&) const (stl_tree.h:531)
+==24112==    by 0x111039: std::_Rb_tree_iterator<std::pair<Client* const, bool> > std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_M_insert_<std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<Client* const, bool> const&, std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_Alloc_node&) (stl_tree.h:1831)
+==24112==    by 0x110423: std::_Rb_tree_iterator<std::pair<Client* const, bool> > std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_M_insert_unique_<std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_Alloc_node>(std::_Rb_tree_const_iterator<std::pair<Client* const, bool> >, std::pair<Client* const, bool> const&, std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_Alloc_node&) (stl_tree.h:2284)
+==24112==    by 0x10F361: std::_Rb_tree<Client*, std::pair<Client* const, bool>, std::_Select1st<std::pair<Client* const, bool> >, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::_M_insert_unique_(std::_Rb_tree_const_iterator<std::pair<Client* const, bool> >, std::pair<Client* const, bool> const&) (stl_tree.h:1147)
+==24112==    by 0x10E281: std::map<Client*, bool, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::insert(std::_Rb_tree_iterator<std::pair<Client* const, bool> >, std::pair<Client* const, bool> const&) (stl_map.h:914)
+==24112==    by 0x10D521: std::map<Client*, bool, std::less<Client*>, std::allocator<std::pair<Client* const, bool> > >::operator[](Client* const&) (stl_map.h:517)
+==24112==    by 0x10C7D0: Channel::addMember(Client*) (Channel.cpp:119)
+==24112==    by 0x11DE6C: Server::cmdJoin(Client&, std::__cxx11::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) (join.cpp:35)
+==24112==
+==24112== 96 bytes in 2 blocks are still reachable in loss record 5 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x11B1EA: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, Client*> > >::allocate(unsigned long, void const*) (new_allocator.h:151)
+==24112==    by 0x11AEEF: allocate (alloc_traits.h:140)
+==24112==    by 0x11AEEF: std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_M_get_node() (stl_tree.h:563)
+==24112==    by 0x11A629: std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_M_create_node(std::pair<int const, Client*> const&) (stl_tree.h:585)
+==24112==    by 0x11A013: std::_Rb_tree_node<std::pair<int const, Client*> >* std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_Alloc_node::operator()<std::pair<int const, Client*> >(std::pair<int const, Client*> const&) const (stl_tree.h:531)
+==24112==    by 0x11914A: std::_Rb_tree_iterator<std::pair<int const, Client*> > std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_M_insert_<std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<int const, Client*> const&, std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_Alloc_node&) (stl_tree.h:1831)
+==24112==    by 0x117AA6: std::_Rb_tree<int, std::pair<int const, Client*>, std::_Select1st<std::pair<int const, Client*> >, std::less<int>, std::allocator<std::pair<int const, Client*> > >::_M_insert_unique(std::pair<int const, Client*> const&) (stl_tree.h:2176)
+==24112==    by 0x11696E: std::map<int, Client*, std::less<int>, std::allocator<std::pair<int const, Client*> > >::insert(std::pair<int const, Client*> const&) (stl_map.h:836)
+==24112==    by 0x114516: Server::newClientConnection() (Server.cpp:133)
+==24112==    by 0x11545A: Server::serverRun() (Server.cpp:227)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 184 bytes in 1 blocks are still reachable in loss record 6 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x11DDFA: Server::cmdJoin(Client&, std::__cxx11::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) (join.cpp:34)
+==24112==    by 0x11B5DC: Server::processCommand(Client&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (commandHandler.cpp:62)
+==24112==    by 0x113A6F: Server::clientMessage(int, Client&) (Server.cpp:102)
+==24112==    by 0x11578E: Server::serverRun() (Server.cpp:263)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 480 bytes in 2 blocks are still reachable in loss record 7 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x1143F6: Server::newClientConnection() (Server.cpp:132)
+==24112==    by 0x11545A: Server::serverRun() (Server.cpp:227)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 480 bytes in 2 blocks are definitely lost in loss record 8 of 10
+==24112==    at 0x4846FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x1143F6: Server::newClientConnection() (Server.cpp:132)
+==24112==    by 0x11545A: Server::serverRun() (Server.cpp:227)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 1,024 bytes in 1 blocks are still reachable in loss record 9 of 10
+==24112==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x4B911B4: _IO_file_doallocate (filedoalloc.c:101)
+==24112==    by 0x4BA1523: _IO_doallocbuf (genops.c:347)
+==24112==    by 0x4B9EF8F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:745)
+==24112==    by 0x4B9FAAE: _IO_new_file_xsputn (fileops.c:1244)
+==24112==    by 0x4B9FAAE: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1197)
+==24112==    by 0x4B92A11: fwrite (iofwrite.c:39)
+==24112==    by 0x49B6DC3: std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+==24112==    by 0x49B713B: std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+==24112==    by 0x114890: Server::serverSocketStart() (Server.cpp:144)
+==24112==    by 0x114FA4: Server::serverRun() (Server.cpp:183)
+==24112==    by 0x10BCC5: main (main.cpp:37)
+==24112==
+==24112== 73,728 bytes in 1 blocks are still reachable in loss record 10 of 10
+==24112==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24112==    by 0x491738E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+==24112==    by 0x400571E: call_init.part.0 (dl-init.c:74)
+==24112==    by 0x4005823: call_init (dl-init.c:120)
+==24112==    by 0x4005823: _dl_init (dl-init.c:121)
+==24112==    by 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+==24112==    by 0x3: ???
+==24112==    by 0x1FFF000302: ???
+==24112==    by 0x1FFF00030E: ???
+==24112==    by 0x1FFF000314: ???
+==24112==    by 0x1FFF000318: ???
+==24112==
+==24112== LEAK SUMMARY:
+==24112==    definitely lost: 480 bytes in 2 blocks
+==24112==    indirectly lost: 0 bytes in 0 blocks
+==24112==      possibly lost: 0 bytes in 0 blocks
+==24112==    still reachable: 75,642 bytes in 11 blocks
+==24112==         suppressed: 0 bytes in 0 blocks
+==24112==
+==24112== For lists of detected and suppressed errors, rerun with: -s
+==24112== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 21:06:54 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 15:00:46 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void Server::clientMessage(int i, Client &c)
 	}
 
 	c.appendBuffer(buf);
-	
+	std::cout << ":"<< buf << ":" << c.getBuffer().empty() << std::endl;
 	size_t pos;
 	while (!c.getBuffer().empty())
 	{

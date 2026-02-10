@@ -6,7 +6,7 @@
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/09 18:23:08 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 12:34:46 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class Client {
 	private:
 
 		int			_fd;
-		std::string	_buffer; // tentar usar class mesagem como buffer
+		std::string	_buffer;
 	
 		std::string	_nickname;
 		std::string	_username;

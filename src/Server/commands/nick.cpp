@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmdNick.cpp                                        :+:      :+:    :+:   */
+/*   nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:25:38 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:30:27 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/10 14:41:19 by toferrei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,5 @@ void Server::cmdNick(Client& client, std::stringstream& ss)
 		return;
 	}
 	client.setNickname(nick);
-	client.reply(RPL_NOTICE, "Step 2/3: Nickname saved. Now send USER <username> 0 * :<realname>.");
+	client.reply(RPL_NEWNICK, "Nickname successfully changed to " + nick);
 }
