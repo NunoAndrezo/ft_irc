@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:53:07 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/12 00:29:39 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,4 +195,22 @@ void Channel::broadcastMessage(const std::string &message, Client *sender) const
 			send(member->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
 		}
 	}
+}
+
+void Channel::broadcastRawMessage(const std::string &message) const
+{
+	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
+		send(it->first->getFd(), message.c_str(), message.length(), 0);
+	}
+}
+
+std::string Channel::getNamesList() const {
+	std::string list = "";
+	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
+		if (!list.empty()) list += " ";
+		if (it->second) // If is operator
+			list += "@";
+		list += it->first->getNickname();
+	}
+	return list;
 }

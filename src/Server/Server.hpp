@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:32:42 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/11 23:59:42 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 #include "../Channel/Channel.hpp"
 #include "../utils/IRCmacros.hpp"
 #include "../utils/stdoutColors.hpp"
+
+#define ERR_USERSDONTMATCH "502"
 
 class Channel;
 
@@ -83,7 +85,8 @@ class Server
 
 		Channel* getChannelByName(std::string name); // return null if not found
 
-
+		void cleanupClient(int i);
+		void handleDisconnect(int i, Client &c);
 		
 
 

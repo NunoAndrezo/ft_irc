@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:15:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:27:19 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/12 00:29:22 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,64 +20,48 @@ void Server::processCommand(Client& client, std::string line)
 	for (size_t i = 0; i < command.length(); i++)
 		command[i] = toupper(command[i]);
 
-	if (command.empty())
-		return;
+	if (command.empty()) return;
 
-	// 1. QUIT handled in main loop to ensure cleanup
-	
-	// 2. CAP
+	// --- 1. THE "OPEN" COMMANDS ---
+	// These MUST be allowed even if the user is unregistered
 	if (command == "CAP")
-	{
 		cmdCap(client);
-	}
 	else if (command == "PASS")
-	{
 		cmdPass(client, ss);
-	}
 	else if (command == "NICK") 
-	{
-		cmdNick(client, ss);
-	} 
-	else if (command == "USER") // after this does user always need to be indetified and registered?
-	{
+		cmdNick(client, ss); 
+	else if (command == "USER")
 		cmdUser(client, ss);
+	else if (command == "QUIT")
+		client.setWasDisconnected(true); // Let the main loop handle it
+
+	// --- 2. THE GATEKEEPER ---
+	// If they try to do anything else (JOIN, MODE, etc.) before finishing NICK/USER/PASS
+	else if (!client.getIsRegistered())
+	{
+		client.reply("451", ":You have not registered"); 
+		return;
 	}
 
-// maybe do the registerer check here?
-
+	// --- 3. REGISTERED ONLY ---
 	else if (command == "PRIVMSG")
-	{
 		cmdPrivmsg(client, line, ss);
-	}
-	else if (command == "PING")
-	{
-		client.reply("PONG", ":pong");
-	}
 	else if (command == "MODE")
-	{
 		cmdMode(client, ss);
-	}
 	else if (command == "JOIN")
-	{
 		cmdJoin(client, ss);
-	}
-	else if (command == "INVITE")
-	{
-		cmdInvite(client, ss);
-	}
-	else if (command == "KICK")
-	{
-		cmdKick(client, ss);
-	}
+	// ... other commands ...
 	else
-	{
-		client.reply(ERR_UNKNOWNCOMMAND, command + " :Unknown command");
-	}
+		client.reply("421", command + " :Unknown command");
 
-	// FINAL REGISTRATION CHECK
-	if (!client.getIsRegistered() && client.getHasPass() && !client.getNickname().empty() && !client.getUsername().empty()) {
+	// --- 4. THE WELCOME TRIGGER ---
+	// Check if the 3 requirements are met to finish registration
+	if (!client.getIsRegistered() && client.getHasPass() && !client.getNickname().empty() && !client.getUsername().empty()) 
+	{
 		client.setIsRegistered(true);
-		client.reply(RPL_WELCOME, ":Welcome to the Internet Relay Network " + client.getNickname());
-		std::cout << "[LOG] Client '" << client.getNickname() << "' (FD " << client.getFd() << ") successfully registered." << std::endl;
+		client.reply("001", ":Welcome to the IRC Network " + client.getNickname());
+		
+		if (_debug)
+			std::cout << "[LOG] Registration Complete for " << client.getNickname() << std::endl;
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:50:53 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/12 00:29:34 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #define MD_TOPIC	0x0002 // topic command to
 #define MD_PASSWORD_PROT	0x0004 // password flag
 #define MD_USR_LIM		0x0008 // user limit flag
+#define MD_TOPIC_REST	0x0016 // only operators can set topic
+
 
 class Server;
 
@@ -35,6 +37,7 @@ class Channel
 		std::string _topic;
 		std::string _password;
 		std::map<Client*, bool> _members; // bool indicates if member is operator
+		
 		std::vector<std::string> _inviteList;
 		int _userLimit; // only relevant if MD_USR_LIM is set
 
@@ -78,6 +81,8 @@ class Channel
 		bool isInInviteList(const std::string &nickname) const;
 
 		void broadcastMessage(const std::string &message, Client *sender) const;
+		void broadcastRawMessage(const std::string &message) const;
+		std::string getNamesList() const;
 };
 
 
