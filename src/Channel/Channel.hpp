@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 13:41:17 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:15:40 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 #define MD_INV		0x0001 // invite only
 #define MD_TOPIC	0x0002 // topic command to
-#define MD_PASSWORD_PROT	0x0004 // password flag
+#define MD_PASSWORD	0x0004 // password flag
 #define MD_USR_LIM		0x0008 // user limit flag
 
 class Server;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:34:31 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:53:37 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:29:13 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,7 @@ void Server::cmdPrivmsg(Client& client, std::string line, std::stringstream& ss)
 		else
 			client.reply(ERR_NOSUCHNICK, target + " :No such nick");
 	}
+	else
+            client.reply(ERR_NEEDMOREPARAMS, "PRIVMSG :Wrong format. Usage: PRIVMSG <target> :<message>");
+
 }

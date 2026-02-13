@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:34:38 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 16:36:08 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:50:50 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,11 @@ void Server::cmdUser(Client& client, std::stringstream& ss)
 			client.setUsername(user);
 			client.setRealname(real);
 			client.reply(RPL_NOTICE, "Step 3/3: User info saved.");
+		}
+		else
+		{
+			client.reply(ERR_NEEDMOREPARAMS, "USER :Real name must be prefixed with ':'");
+			return;
 		}
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 13:40:55 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:26:18 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Channel::Channel(std::string name, bool debug): _name(name),
 													_topic(""),
 													_password(""),
 													_userLimit(0),
-													_modes(MD_INV),
+													_modes(0),
 													_debug(debug)
 {
 

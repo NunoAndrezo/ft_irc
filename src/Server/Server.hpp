@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:32:42 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:08:46 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ class Server
 		void cmdJoin(Client &client, std::stringstream &ss);
 		void cmdInvite(Client& client, std::stringstream& ss);
 		void cmdKick(Client& client, std::stringstream& ss);
+		void cmdTopic(Client& client, std::stringstream& ss);
 
 		// Fx
 

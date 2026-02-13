@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 22:53:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/02/12 00:42:43 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/13 16:17:13 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 	if (!(ss >> modeString)) {
 		std::string currentModes = "+";
 		if (channel->getModes() & MD_INV) currentModes += "i";
-		if (channel->getModes() & MD_TOPIC_REST) currentModes += "t";
-		if (channel->getModes() & MD_PASSWORD_PROT) currentModes += "k";
+		if (channel->getModes() & MD_TOPIC) currentModes += "t";
+		if (channel->getModes() & MD_PASSWORD) currentModes += "k";
 		if (channel->getModes() & MD_USR_LIM) currentModes += "l";
 		
 		std::string modeArgs = "";
-		if (channel->getModes() & MD_PASSWORD_PROT) modeArgs += " " + channel->getPassword();
+		if (channel->getModes() & MD_PASSWORD) modeArgs += " " + channel->getPassword();
 		if (channel->getModes() & MD_USR_LIM) {
 			std::stringstream oss;
 			oss << channel->getUserLimit();
@@ -79,18 +79,18 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 				appliedModes += (adding ? "+i" : "-i");
 				break;
 			case 't':
-				adding ? channel->addMode(MD_TOPIC_REST) : channel->removeMode(MD_TOPIC_REST);
+				adding ? channel->addMode(MD_TOPIC) : channel->removeMode(MD_TOPIC);
 				appliedModes += (adding ? "+t" : "-t");
 				break;
 			case 'k':
 				if (adding && (ss >> modeArg)) {
 					channel->setPassword(modeArg);
-					channel->addMode(MD_PASSWORD_PROT);
+					channel->addMode(MD_PASSWORD);
 					appliedModes += "+k";
 					appliedArgs += " " + modeArg;
 				} else if (!adding) {
 					channel->setPassword("");
-					channel->removeMode(MD_PASSWORD_PROT);
+					channel->removeMode(MD_PASSWORD);
 					appliedModes += "-k";
 				}
 				break;

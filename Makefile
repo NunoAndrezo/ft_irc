@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+         #
+#    By: famendes <famendes@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/02 15:24:08 by toferrei          #+#    #+#              #
-#    Updated: 2026/02/10 12:32:49 by toferrei         ###   ########.fr        #
+#    Updated: 2026/02/13 16:19:49 by famendes         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SOURCE		=	$(SRC)main.cpp \
 				$(SRC)$(SRV)$(CMD)mode.cpp \
 				$(SRC)$(SRV)$(CMD)join.cpp \
 				$(SRC)$(SRV)$(CMD)invite.cpp \
+				$(SRC)$(SRV)$(CMD)topic.cpp \
 				$(SRC)$(SRV)$(CMD)kick.cpp
 				
 OBJ_DIR		=	Objects/

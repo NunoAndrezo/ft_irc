@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/09 17:45:35 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:30:11 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:35:58 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,14 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 				client.reply(ERR_USERONCHANNEL, channelName + " :You are already on that channel");
 				return;
 			}
-			if (channel->getModes() & MD_PASSWORD_PROT && !(ss >> password) && password != channel->getPassword())
-			{
-				client.reply(ERR_BADCHANNELKEY, channelName + " :Cannot join channel (incorrect password)");
-				return;
-			}
 			if (channel->getModes() & MD_INV && !channel->isInInviteList(client.getNickname()))
 			{
 				client.reply(ERR_INVITEONLYCHAN, channelName + " :Cannot join channel (invite only)");
+				return;
+			}
+			if (channel->getModes() & MD_PASSWORD && !(ss >> password) && password != channel->getPassword())
+			{
+				client.reply(ERR_BADCHANNELKEY, channelName + " :Cannot join channel (incorrect password)");
 				return;
 			}
 			if (channel->getModes() & MD_USR_LIM && channel->getUserLimit() <= (int)channel->getMembers().size())
@@ -66,6 +66,7 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 			std::string joinMsg = ":" + client.getNickname() + "!" + client.getUsername() + 
 						"@" + client.getHostname() + " JOIN :" + channelName + "\r\n";
 			channel->broadcastRawMessage(joinMsg);
+			client.reply(RPL_TOPIC, channelName + " :" + channel->getTopic());
 		}
 	}
 	else

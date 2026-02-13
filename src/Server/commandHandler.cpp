@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:15:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:27:19 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:19:16 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,10 @@ void Server::processCommand(Client& client, std::string line)
 	else if (command == "KICK")
 	{
 		cmdKick(client, ss);
+	}
+	else if (command == "TOPIC")
+	{
+		cmdTopic(client, ss);
 	}
 	else
 	{
