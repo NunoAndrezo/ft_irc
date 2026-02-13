@@ -6,7 +6,7 @@
 /*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 22:53:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/02/13 16:17:13 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 18:47:03 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,9 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 					} else client.reply(ERR_NOSUCHNICK, modeArg + " :No such nick");
 				}
 				break;
+			default:
+				client.reply(ERR_UMODEUNKNOWNFLAG, std::string("MODE :Unknown mode flag"));
+				return;
 		}
 	}
 

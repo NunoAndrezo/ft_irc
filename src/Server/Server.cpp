@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 15:32:23 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 19:05:53 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@ Server::Server(int port, std::string password, bool debug):  _serverPort(port),
 
 Server::~Server()
 {
+/* 	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+		delete *it;
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		delete it->second; */
 	close(_serverSocketFd);
 }
 

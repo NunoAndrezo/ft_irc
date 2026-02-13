@@ -107,5 +107,6 @@
 # define ERR_ERRONEUSREALNAME       "472" // <client> <realname> :Erroneus realname
 # define ERR_ALREADYOPER            "485" // <client> :You're already an IRC operator
 # define ERR_USERSDONTMATCH			"502"
+#define ERR_UMODEUNKNOWNFLAG		"501" // <client> :Unknown mode flag
 
 #endif
