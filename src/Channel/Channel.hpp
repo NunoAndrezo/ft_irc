@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:50:53 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:41:17 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ class Channel
 		bool isInInviteList(const std::string &nickname) const;
 
 		void broadcastMessage(const std::string &message, Client *sender) const;
+		void broadcastRawMessage(const std::string &message) const;
 };
 
 

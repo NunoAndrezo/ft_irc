@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:53:07 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:40:55 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,5 +194,13 @@ void Channel::broadcastMessage(const std::string &message, Client *sender) const
 			std::string fullMsg = ":" + sender->getNickname() + " PRIVMSG " + _name + " " + message + "\r\n";
 			send(member->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
 		}
+	}
+}
+
+void Channel::broadcastRawMessage(const std::string &message) const
+{
+	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+	{
+		send(it->first->getFd(), message.c_str(), message.length(), 0);
 	}
 }

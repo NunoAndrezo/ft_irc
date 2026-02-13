@@ -66,6 +66,7 @@
 # define RPL_ENDOFWHOIS             "318" // <client> <nick> :End of WHOIS list
 # define RPL_WHOISCHANNELS          "319" // <client> <nick> :<channels>
 
+
 /*
 ** PING / PONG Commands
 */
@@ -105,5 +106,6 @@
 # define ERR_ERRONEUSUSERNAME       "467" // <client> <username> :Erroneus username
 # define ERR_ERRONEUSREALNAME       "472" // <client> <realname> :Erroneus realname
 # define ERR_ALREADYOPER            "485" // <client> :You're already an IRC operator
+# define ERR_USERSDONTMATCH			"502"
 
 #endif
