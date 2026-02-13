@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 22:53:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/02/13 13:41:29 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/12 00:42:43 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 	if (!(ss >> modeString)) {
 		std::string currentModes = "+";
 		if (channel->getModes() & MD_INV) currentModes += "i";
-		if (channel->getModes() & MD_TOPIC) currentModes += "t";
+		if (channel->getModes() & MD_TOPIC_REST) currentModes += "t";
 		if (channel->getModes() & MD_PASSWORD_PROT) currentModes += "k";
 		if (channel->getModes() & MD_USR_LIM) currentModes += "l";
 		
@@ -54,7 +54,7 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 			oss << channel->getUserLimit();
 			modeArgs += " " + oss.str();
 		}
-		client.reply(RPL_CHANNELMODEIS, channel->getName() + " " + currentModes + modeArgs);
+		client.reply("324", channel->getName() + " " + currentModes + modeArgs);
 		return;
 	}
 
@@ -79,7 +79,7 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 				appliedModes += (adding ? "+i" : "-i");
 				break;
 			case 't':
-				adding ? channel->addMode(MD_TOPIC) : channel->removeMode(MD_TOPIC);
+				adding ? channel->addMode(MD_TOPIC_REST) : channel->removeMode(MD_TOPIC_REST);
 				appliedModes += (adding ? "+t" : "-t");
 				break;
 			case 'k':

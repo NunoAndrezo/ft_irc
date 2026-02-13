@@ -45,14 +45,14 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 				client.reply(ERR_USERONCHANNEL, channelName + " :You are already on that channel");
 				return;
 			}
-			if (channel->getModes() & MD_INV && !channel->isInInviteList(client.getNickname()))
-			{
-				client.reply(ERR_INVITEONLYCHAN, channelName + " :Cannot join channel (invite only)");
-				return;
-			}
 			if (channel->getModes() & MD_PASSWORD_PROT && !(ss >> password) && password != channel->getPassword())
 			{
 				client.reply(ERR_BADCHANNELKEY, channelName + " :Cannot join channel (incorrect password)");
+				return;
+			}
+			if (channel->getModes() & MD_INV && !channel->isInInviteList(client.getNickname()))
+			{
+				client.reply(ERR_INVITEONLYCHAN, channelName + " :Cannot join channel (invite only)");
 				return;
 			}
 			if (channel->getModes() & MD_USR_LIM && channel->getUserLimit() <= (int)channel->getMembers().size())
@@ -63,6 +63,9 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 			channel->addMember(&client);
 			if (_debug)
 				std::cout << FGRN("[LOG] Added ") << client.getNickname() << " to channel " << channelName << "." << std::endl;
+			std::string joinMsg = ":" + client.getNickname() + "!" + client.getUsername() + 
+						"@" + client.getHostname() + " JOIN :" + channelName + "\r\n";
+			channel->broadcastRawMessage(joinMsg);
 		}
 	}
 	else
