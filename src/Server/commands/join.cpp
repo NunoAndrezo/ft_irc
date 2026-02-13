@@ -6,7 +6,7 @@
 /*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/09 17:45:35 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 17:35:58 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 18:39:04 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 			_channels.push_back(newChannel);
 			if (_debug)
 				std::cout << FGRN("[LOG] Created channel ") << channelName << " and added " << client.getNickname() << " as operator." << std::endl;
+			channel = newChannel;
 		}
 		else // see if client can join existing channel (password, invite only, user limit)
 		{
@@ -61,13 +62,21 @@ void Server::cmdJoin(Client &client, std::stringstream &ss)
 				return;
 			}
 			channel->addMember(&client);
-			if (_debug)
-				std::cout << FGRN("[LOG] Added ") << client.getNickname() << " to channel " << channelName << "." << std::endl;
-			std::string joinMsg = ":" + client.getNickname() + "!" + client.getUsername() + 
-						"@" + client.getHostname() + " JOIN :" + channelName + "\r\n";
-			channel->broadcastRawMessage(joinMsg);
-			client.reply(RPL_TOPIC, channelName + " :" + channel->getTopic());
 		}
+						
+	if (_debug)
+		std::cout << FGRN("[LOG] Added ") << client.getNickname() << " to channel " << channelName << "." << std::endl;
+	std::string joinMsg = ":" + client.getNickname() + "!" + client.getUsername() + 
+							"@" + client.getHostname() + " JOIN :" + channelName + "\r\n";
+ 	channel->broadcastRawMessage(joinMsg);	
+	std::cout << "OLA1" << std::endl;
+ 	if (channel->getTopic().size() > 0)
+		client.reply(RPL_TOPIC, channelName + " :" + channel->getTopic());
+	std::cout << "OLA2" << std::endl;	
+	client.reply(RPL_NAMREPLY, "= " + channelName + " :" + channel->getNamesList());
+	std::cout << "OLA3" << std::endl;
+	client.reply(RPL_ENDOFNAMES, channelName + " :End of /NAMES list.");	
+	std::cout << "OLA4" << std::endl;
 	}
 	else
 	{

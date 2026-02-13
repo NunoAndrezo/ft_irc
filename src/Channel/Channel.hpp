@@ -6,7 +6,7 @@
 /*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 16:15:40 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 18:23:23 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ class Channel
 
 		void broadcastMessage(const std::string &message, Client *sender) const;
 		void broadcastRawMessage(const std::string &message) const;
+		std::string getNamesList() const;
 };
 
 

@@ -6,14 +6,14 @@
 /*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 16:26:18 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/13 19:01:14 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
 Channel::Channel(std::string name, bool debug): _name(name),
-													_topic(""),
+													_topic(" "),
 													_password(""),
 													_userLimit(0),
 													_modes(0),
@@ -203,4 +203,15 @@ void Channel::broadcastRawMessage(const std::string &message) const
 	{
 		send(it->first->getFd(), message.c_str(), message.length(), 0);
 	}
+}
+
+std::string Channel::getNamesList() const {
+	std::string list = "";
+	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
+		if (!list.empty()) list += " ";
+		if (it->second) // If is operator
+			list += "@";
+		list += it->first->getNickname();
+	}
+	return list;
 }
