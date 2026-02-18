@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:21:34 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/18 12:15:27 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/18 13:15:49 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,21 @@ void Server::cmdQuit(Client &c, std::stringstream &ss)
 
 	// 2. Ativa a flag. A função 'clientMessage' vai ver isto e chama disconnectClient
 	c.setWasDisconnected(true);
+}
+
+void Server::handleQuitLogic(Client &c, std::string reason)
+{
+	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); ) {
+		if ((*it)->isMember(&c))
+		{
+			(*it)->broadcast(":" + c.getNickname() + " QUIT :" + reason);
+			(*it)->removeMember(&c);
+			if ((*it)->getMemberCount() == 0) {
+				delete *it;
+				it = _channels.erase(it);
+				continue;
+			}
+		}
+		++it;
+	}
 }

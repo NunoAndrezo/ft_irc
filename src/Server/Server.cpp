@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/18 13:04:21 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/18 13:15:44 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,23 +88,6 @@ void Server::clientMessage(int i, Client &c)
 			disconnectClient(i);
 			return ;
 		}
-	}
-}
-
-void Server::handleQuitLogic(Client &c, std::string reason)
-{
-	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); ) {
-		if ((*it)->isMember(&c))
-		{
-			(*it)->broadcast(":" + c.getNickname() + " QUIT :" + reason);
-			(*it)->removeMember(&c);
-			if ((*it)->getMemberCount() == 0) {
-				delete *it;
-				it = _channels.erase(it);
-				continue;
-			}
-		}
-		++it;
 	}
 }
 
