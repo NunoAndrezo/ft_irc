@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 19:01:14 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/18 12:38:23 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,12 +186,16 @@ bool Channel::isInInviteList(const std::string &nickname) const
 
 void Channel::broadcastMessage(const std::string &message, Client *sender) const
 {
+	// Criamos o prefixo completo uma única vez fora do loop para ser mais eficiente
+	// Formato: :Nick!User@Host PRIVMSG #canal :mensagem\r\n
+	std::string fullMsg = ":" + sender->getNickname() + "!" + sender->getUsername() + "@" + sender->getHostname() 
+						+ " PRIVMSG " + _name + " " + message + "\r\n";
+
 	for (std::map<Client*, bool>::const_iterator it = _members.begin(); it != _members.end(); ++it)
 	{
 		Client* member = it->first;
-		if (member->getNickname() != sender->getNickname()) // dont send message to sender
+		if (member != sender) // Comparar ponteiros é mais rápido que comparar strings de nicknames
 		{
-			std::string fullMsg = ":" + sender->getNickname() + " PRIVMSG " + _name + " " + message + "\r\n";
 			send(member->getFd(), fullMsg.c_str(), fullMsg.length(), 0);
 		}
 	}
@@ -214,4 +218,26 @@ std::string Channel::getNamesList() const {
 		list += it->first->getNickname();
 	}
 	return list;
+}
+
+size_t Channel::getMemberCount() const {
+	return _members.size();
+}
+
+void Channel::broadcast(std::string message) {
+	if (message.find("\r\n") == std::string::npos)
+		message += "\r\n";
+		
+	for (std::map<Client*, bool>::iterator it = _members.begin(); it != _members.end(); ++it) {
+		// it->first é o ponteiro Client*
+		send(it->first->getFd(), message.c_str(), message.length(), 0);
+	}
+}
+
+bool Channel::isMember(Client *c)
+{
+	// O find procura pela chave (ponteiro do Client)
+	std::map<Client*, bool>::const_iterator it = _members.find(c);
+	// Se não chegou ao fim, o gajo está no mapa
+	return it != _members.end();
 }

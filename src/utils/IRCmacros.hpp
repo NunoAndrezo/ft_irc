@@ -83,6 +83,8 @@
 # define ERR_TOOMANYCHANNELS        "405" // <channel name> :You have joined too many channels
 # define ERR_WASNOSUCHNICK          "406" // <nickname> :There was no such nickname
 # define ERR_TOOMANYTARGETS         "407" // <target> :Duplicate recipients. No message delivered
+# define ERR_NORECIPIENT			"411" // :No recipient given (PRIVMSG)
+# define ERR_NOTEXTTOSEND			"412" // :No text to send
 # define ERR_UNKNOWNCOMMAND         "421" // <command> :Unknown command
 # define ERR_NONICKNAMEGIVEN        "431" // :No nickname given
 # define ERR_NICKNAMEINUSE          "433" // <nick> :Nickname is already in use
@@ -107,6 +109,6 @@
 # define ERR_ERRONEUSREALNAME       "472" // <client> <realname> :Erroneus realname
 # define ERR_ALREADYOPER            "485" // <client> :You're already an IRC operator
 # define ERR_USERSDONTMATCH			"502"
-#define ERR_UMODEUNKNOWNFLAG		"501" // <client> :Unknown mode flag
+# define ERR_UMODEUNKNOWNFLAG		"501" // <client> :Unknown mode flag
 
 #endif

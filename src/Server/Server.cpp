@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 19:05:53 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/18 13:04:21 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,16 @@ Server::Server(int port, std::string password, bool debug):  _serverPort(port),
 															_debug(debug),
 															_serverHostname("TestingServer")
 {
-
 }
 
 Server::~Server()
 {
-/* 	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
-		delete *it;
 	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-		delete it->second; */
+		delete it->second;
+	for (size_t i = 0; i < _channels.size(); ++i)
+		delete _channels[i];
+	_channels.clear();
+	_clients.clear();
 	close(_serverSocketFd);
 }
 
@@ -64,59 +65,67 @@ void Server::clientMessage(int i, Client &c)
 		std::cout << FRED("[LOG] Received ") << bytes << " bytes" << std::endl;
 	if (bytes <= 0)
 	{
-		if (bytes == 0)
-		{
-			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
-			std::cout << FRED("[LOG] ") << name << " (FD " << _pollfds[i].fd << ") has disconnected." << std::endl;
-		}
-		else
-			std::cerr << "Recv failed: " << std::string(strerror(errno)) << std::endl;
-		c.setWasDisconnected(true);
-		close(_pollfds[i].fd);
-		_clients.erase(_pollfds[i].fd);
-		_pollfds.erase(_pollfds.begin() + i);
+		// Se a net cair, ou fechar o terminal, temos de tirar o gajo dos canais antes de o apagar!
+		handleQuitLogic(c, "Dropped connection");
+		disconnectClient(i);
 		return;
 	}
 
+	buf[bytes] = '\0';
 	c.appendBuffer(buf);
-	size_t pos;
-	while (!c.getBuffer().empty())
+	while (c.getBuffer().find("\n") != std::string::npos)
 	{
-		if (c.getBuffer().find(CRLF) == std::string::npos)
-			return; // wait for more data
-		pos = c.getBuffer().find(CRLF);
+		size_t pos = c.getBuffer().find("\n");
 		std::string line = c.getBuffer().substr(0, pos);
-		c.setBuffer(c.getBuffer().substr(pos + 2)); // remove processed line + CRLF
-
-		if (line.find("QUIT") == 0) // deviamos tratar o quit como um commando normal
+		if (!line.empty() && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1);
+		
+		c.setBuffer(c.getBuffer().substr(pos + 1));
+		if (!line.empty())
+			processCommand(c, line);
+		if (c.getWasDisconnected()) // Se o comando foi QUIT, para de processar o buffer
 		{
-			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
-			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") has left the server (QUIT)." << std::endl;
-			c.reply(RPL_QUIT, ":Client quitting");
-			c.setWasDisconnected(true);
-			close(_pollfds[i].fd);
-			_clients.erase(_pollfds[i].fd);
-			_pollfds.erase(_pollfds.begin() + i);
-			delete &c;
-			return; 
-		}
-		if (_debug)
-			std::cout << FYEL("[LOG] Processing command from FD ") << _pollfds[i].fd << ": " << line << std::endl;
-		processCommand(c, line);
-				
-		// Check if client was disconnected after/during processing commands
-		if (c.getWasDisconnected())
-		{
-			std::string name = c.getNickname().empty() ? "Unregistered Client" : c.getNickname();
-			std::cout << "[LOG] " << name << " (FD " << _pollfds[i].fd << ") disconnected." << std::endl;
-			close(_pollfds[i].fd);
-			_clients.erase(_pollfds[i].fd);
-			_pollfds.erase(_pollfds.begin() + i);
-			return;
+			disconnectClient(i);
+			return ;
 		}
 	}
 }
 
+void Server::handleQuitLogic(Client &c, std::string reason)
+{
+	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); ) {
+		if ((*it)->isMember(&c))
+		{
+			(*it)->broadcast(":" + c.getNickname() + " QUIT :" + reason);
+			(*it)->removeMember(&c);
+			if ((*it)->getMemberCount() == 0) {
+				delete *it;
+				it = _channels.erase(it);
+				continue;
+			}
+		}
+		++it;
+	}
+}
+
+void Server::disconnectClient(int &idx)
+{
+	int fd = _pollfds[idx].fd;
+	Client* client = _clients[fd];
+
+	if (_debug)
+	{
+		std::string name = client->getNickname().empty() ? "Unregistered Client" : client->getNickname();
+		std::cout << FRED("[LOG] ") << name << " (FD " << fd << ") disconnected." << std::endl;
+	}
+
+	close(fd);
+	delete client;
+	_clients.erase(fd);
+	_pollfds.erase(_pollfds.begin() + idx);
+
+	idx--; // Ajusta o índice para o loop for não saltar o próximo cliente
+}
 
 void Server::newClientConnection()
 {
@@ -181,8 +190,7 @@ void Server::serverSocketStart()
 
 void Server::serverRun()
 {
-	try
-	{
+	try {
 		Server::serverSocketStart();
 	}
 	catch(const std::exception& e)
@@ -194,7 +202,7 @@ void Server::serverRun()
 	addPollfd(_pollfds, STDIN_FILENO, POLLIN);
 	if (_debug)
 		std::cout << "[LOG] Server is running. Waiting for connections..." << std::endl;
-	while (true)
+	while (g_serverRunning)
 	{
 		int pollCount = poll(_pollfds.data(), _pollfds.size(), 0);
 		if (pollCount == - 1)
@@ -267,6 +275,7 @@ void Server::serverRun()
 			}
 		}
 	}
+	std::cout << "Server is shutting down..." << std::endl;
 }
 
 bool Server::hasClient(std::string nickname)

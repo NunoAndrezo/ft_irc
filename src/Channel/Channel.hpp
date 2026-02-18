@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:37:39 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 18:23:23 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/18 10:41:49 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ class Channel
 		void broadcastMessage(const std::string &message, Client *sender) const;
 		void broadcastRawMessage(const std::string &message) const;
 		std::string getNamesList() const;
+
+		bool isMember(Client *c);
+		void broadcast(const std::string message);
+		size_t getMemberCount() const;
 };
 
 

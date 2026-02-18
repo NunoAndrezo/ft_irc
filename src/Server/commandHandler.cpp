@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:15:15 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/13 16:19:16 by famendes         ###   ########.fr       */
+/*   Updated: 2026/02/18 12:35:09 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,10 @@ void Server::processCommand(Client& client, std::string line)
 	else if (command == "TOPIC")
 	{
 		cmdTopic(client, ss);
+	}
+	else if (command == "QUIT")
+	{
+		cmdQuit(client, ss);
 	}
 	else
 	{
