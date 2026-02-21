@@ -14,7 +14,6 @@
 
 void Server::cmdInvite(Client& client, std::stringstream& ss)
 {
-	// To be implemented
 	// if user is registered/authentificated
 	if (client.getHasPass() && client.getIsRegistered())
 	{
