@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:42 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/10 12:34:46 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/21 15:05:31 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,9 @@
 
 #define USER_MODE_INVISIBLE 0x0001
 
+// Example
 // USER	<username>	<hostname>	<servername>	:<realname>
 // USER	etom		IP do user	IP do servidor		:etom
-
-
-
-// int result = getnameinfo((struct sockaddr *)&client_address, client_address_size, hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
 
 class Client {
 	private:
@@ -65,7 +62,6 @@ class Client {
 		void reply(std::string clientCode, std::string message);
 
 		// Getters and Setters
-
 		int getFd() const;
 		void setFd(const int fd);
 
@@ -100,7 +96,6 @@ class Client {
 		void setUserMode(const int mode);		
 
 		// Buffer Methods
-
 		void appendBuffer(const std::string& data);
 		void clearBuffer();
 

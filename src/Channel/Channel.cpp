@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 14:38:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/18 12:38:23 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/21 15:03:57 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,7 @@ Channel::Channel(std::string name, bool debug): _name(name),
 
 }
 
-Channel::~Channel()
-{
-
+Channel::~Channel(){
 }
 
 Channel::Channel(const Channel &other): _name(other._name),

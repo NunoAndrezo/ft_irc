@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:36:09 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/18 13:15:44 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/21 15:12:45 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,18 +95,16 @@ void Server::disconnectClient(int &idx)
 {
 	int fd = _pollfds[idx].fd;
 	Client* client = _clients[fd];
-
+	
 	if (_debug)
 	{
 		std::string name = client->getNickname().empty() ? "Unregistered Client" : client->getNickname();
 		std::cout << FRED("[LOG] ") << name << " (FD " << fd << ") disconnected." << std::endl;
 	}
-
 	close(fd);
 	delete client;
 	_clients.erase(fd);
 	_pollfds.erase(_pollfds.begin() + idx);
-
 	idx--; // Ajusta o índice para o loop for não saltar o próximo cliente
 }
 
@@ -126,7 +124,7 @@ void Server::newClientConnection()
 		throw std::runtime_error(std::string(gai_strerror(result)));
 	Client *clientObj = new Client(client_fd, _serverHostname, hostname, _debug);
 	_clients.insert(std::make_pair(client_fd, clientObj));
-	std::cout << "Client: " << clientObj->getHostname() << ":" << clientObj->getFd() << " has connected" << std::endl;	// nn sei se faz sentido mandar isto aqui ja que se manda a pass ao mesmo tempo que se liga
+	std::cout << "Client: " << clientObj->getHostname() << ":" << clientObj->getFd() << " has connected" << std::endl;
 }
 
 void Server::serverSocketStart()
@@ -227,20 +225,16 @@ void Server::serverRun()
 			}
 		}
 		//check for stdin input (server commands)
-		if (_pollfds[1].revents & POLLIN) // read from stdin
+		if (_pollfds[1].revents & POLLIN) // read from stdin for exit command on the server side
 		{	
 			std::string bufstring;
 			std::getline(std::cin, bufstring);
-			if (bufstring.find("EXIT") != std::string::npos)
+			if (bufstring.find("EXIT", 0) != std::string::npos || bufstring.find("exit", 0) != std::string::npos)
 				break ;
 		}
 		//check for client messages
 		for (size_t i = 2; i < _pollfds.size(); ++i)
 		{
-/* 			if (_clients[_pollfds[i].fd]->getWasDisconnected())
-			{
-				continue;
-			} */
 			if (_debug)
 				std::cout << "FD " << _pollfds[i].fd << " revents: " << _pollfds[i].revents << std::endl;
 			if (_clients.find(_pollfds[i].fd) == _clients.end())

@@ -37,7 +37,6 @@ void Server::cmdTopic(Client& client, std::stringstream& ss)
         client.reply(ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
         return;
     }
-        //todo
         if (topic[0] != ':')
         {
             client.reply(ERR_NEEDMOREPARAMS, "TOPIC :Topic must start with ':'");
@@ -50,5 +49,4 @@ void Server::cmdTopic(Client& client, std::stringstream& ss)
             client.reply(RPL_NOTOPIC, channelName + " :No topic is set");
         else
             client.reply(RPL_TOPIC, channelName + " :" + topic);
-/*         channel->broadcastRawMessage(client.getNickname() + " changed TOPIC to " + topic, &client);
- */    }
+}

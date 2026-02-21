@@ -3,27 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: toferrei <toferrei@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 17:42:51 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/04 14:33:41 by toferrei         ###   ########.fr       */
+/*   Updated: 2026/02/21 15:04:40 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
-
-/* Client::Client(): _fd(-1),
-				_nickname(""),
-				_username(""),
-				_hostname(""),
-				_servername(""),
-				_realname(""),
-				_hasPass(false),
-				_isRegistered(false)
-				_
-{
-
-} */
 
 Client::Client(int clientFd, std::string serverHostname, std::string hostname, bool debug): _fd(clientFd),
 							_nickname(""),
@@ -36,10 +23,7 @@ Client::Client(int clientFd, std::string serverHostname, std::string hostname, b
 							_isRegistered(false),
 							_wasDisconnected(false),
 							_debug(debug),
-							_userMode(0)
-{
-
-}
+							_userMode(0){}
 
 Client::~Client()
 {
@@ -72,7 +56,7 @@ Client& Client::operator=(const Client& other)
 	return *this;
 }
 
-void Client::reply(std::string clientCode, std::string message) // example: ": " + servername +  + ":" + "possible message" + "\r\n";
+void Client::reply(std::string clientCode, std::string message)
 {
 	// Format ":<server_hostname> <code> <nickname> :<message>\r\n"
 	std::string nick = _nickname.empty() ? "unregistered " : _nickname;

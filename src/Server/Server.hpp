@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: famendes <famendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 15:35:33 by toferrei          #+#    #+#             */
-/*   Updated: 2026/02/18 12:08:05 by nuno             ###   ########.fr       */
+/*   Updated: 2026/02/21 14:52:09 by famendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,23 @@
 class Channel;
 
 extern bool g_serverRunning;
+
+enum commands
+{
+	CAP,
+	PASS,
+	NICK,
+	USER,
+	PRIVMSG,
+	PING,
+	MODE,
+	JOIN,
+	INVITE,
+	KICK,
+	TOPIC,
+	QUIT,
+	UNKNOWN,
+};
 
 class Server
 {
@@ -71,6 +88,8 @@ class Server
 		// commands
 		
 		void processCommand(Client& client, std::string line);
+		int	 parseCommand(const std::string& cmd) const;
+
 
 		void cmdCap(Client& client);
 		void cmdPass(Client& client, std::stringstream& ss);
