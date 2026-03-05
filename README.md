@@ -3,55 +3,80 @@
 Lisbon, 9th of February 2026 
 
 Hello dear user,
-This small readme functions as way for you to discover us(1), our project (2), being able to use it (3), and check the ressources we used to achieve it (4).
+This small readme functions as way for you to discover us, our project, being able to use it, and check the ressources we used to achieve it.
 
-(1) Who are we?
+## Who are we?
 
-	We are Nuno, Fabio, and Tomaz. 3 students currently studying at school 42 Lisbon.
+We are Nuno, Fabio, and Tomaz. 3 students currently studying at school 42 Lisbon.
 
-(2) The project.
+## The project.
 
-	ft_IRC is our own rudimentary Internet Relay Chat server! yada yada...
+ft_IRC is our own rudimentary Internet Relay Chat server! yada yada...
 
-(3) How-to
+## How-to
 
-	To start the using our small server youll need a few things. A UNIX system (debian, ubuntu, etc...), a C++ compiler, CMAKE, a IRC client (specifically irssi in this case), and a bit of patience (just kidding, it shouldn't take you more than 15min untill you can start sending your own messages)!
+To start the using our small server youll need a few things. A UNIX system (debian, ubuntu, etc...), a C++ compiler, CMAKE, a IRC client (specifically irssi in this case), and a bit of patience (just kidding, it shouldn't take you more than 15min untill you can start sending your own messages)!
 
-	Dependencies to install
-		sudo apt install g++
-		sudo apt install make
-		sudo apt install irssi
+Dependencies to install
 
-	To use
+	sudo apt install g++
+	sudo apt install make
+	sudo apt install irssi
 
-	After cloning our project, do make. Then execute the program with the following template :
+To use
 
-		PORT is the port you want to use.
-		PASSWORD is the password you will want for your clients to connect to the server with.
-		--debug is optional, it serves mostly for a greater understanding of the messages going to and from the server.
+After cloning our project, do make. Then execute the program with the following template :
+
+PORT is the port you want to use.
+PASSWORD is the password you will want for your clients to connect to the server with.
+--debug is optional, it serves mostly for a greater understanding of the messages going to and from the server.
 
 	./ircserver PORT PASSWORD [--debug]
 
-	Then, either launch irssi with the following command
+Then, either launch irssi with the following command
 
-		PORT same as the one you chose for the server
-		YOUR_NICKNAME any nickname you choose, can only be used once per server
-		PASSWORD same as the one you chose for the server
+PORT same as the one you chose for the server
+YOUR_NICKNAME any nickname you choose, can only be used once per server
+PASSWORD same as the one you chose for the server
 
-		irssi -p PORT -n YOUR_NICKNAME -w PASSWORD
+	irssi -p PORT -n YOUR_NICKNAME -w PASSWORD
 
-	or once your in irssi
+or once your in irssi
 
-<!-- finish the line below as I have no idea -->
-		If running on the same machine (server and client) you can use localhost (127.0.0.1). Otherwise 
-		PORT same as the one you chose for the server
-		YOUR_NICKNAME any nickname you choose, can only be used once per server
-		PASSWORD same as the one you chose for the server
+If running on the same machine (server and client) you can use localhost (127.0.0.1) or (0.0.0.0). Otherwise 
+PORT same as the one you chose for the server
+YOUR_NICKNAME any nickname you choose, can only be used once per server
+PASSWORD same as the one you chose for the server
 
-		/CONNECT IP PORT PASSWORD YOUR_NICKNAME
+	/CONNECT IP PORT PASSWORD YOUR_NICKNAME
 
-	<!-- KEEP EXPLAING ABOUT THE COMMANDS YOU CAN USE TO CREATE CHANNELS, CHANGE PERMISSIONS, SEND MSGS, ETC... -->
+<!-- KEEP EXPLAING ABOUT THE COMMANDS YOU CAN USE TO CREATE CHANNELS, CHANGE PERMISSIONS, SEND MSGS, ETC... -->
 
-(4) Sources
+## Sources
 
-	<!-- COPY SOURCES FROM DOCS AND ADD MORE -->
+Man Pages:
+
+https://linux.die.net/man/3/socket
+https://linux.die.net/man/3/close
+https://man7.org/linux/man-pages/man3/setsockopt.3p.html
+https://man7.org/linux/man-pages/man3/setsockopt.3p.html
+https://linux.die.net/man/3/getprotobyname
+https://linux.die.net/man/3/gethostbyname
+https://man7.org/linux/man-pages/man3/getaddrinfo.3.html
+https://linux.die.net/man/3/freeaddrinfo
+https://linux.die.net/man/3/bind
+https://linux.die.net/man/3/connect
+https://linux.die.net/man/3/listen
+https://linux.die.net/man/3/accept
+https://linux.die.net/man/3/htons
+https://linux.die.net/man/3/inet_addr
+https://linux.die.net/man/3/send
+
+IRC replies (all the codes our server sends back to the IRC client):
+https://www.alien.net.au/irc/irc2numerics.html
+
+The Client:
+	https://irssi.org/
+
+Full IRC protocol documentation
+	https://modern.ircdocs.horse/
