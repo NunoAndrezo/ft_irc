@@ -1,57 +1,107 @@
-# ft_irc
+*This project has been created as part of the 42 curriculum by toferrei, famendes, nneves-a.*
 
-Lisbon, 9th of February 2026 
+# Ft_IRC
+
+### Lisbon, 9th of February 2026 
 
 Hello dear user,
-This small readme functions as way for you to discover us(1), our project (2), being able to use it (3), and check the ressources we used to achieve it (4).
+This small readme functions as way for you to discover us, our project, being able to use it, and check the ressources we used to achieve it.
 
-(1) Who are we?
+---
 
-	We are Nuno, Fabio, and Tomaz. 3 students currently studying at school 42 Lisbon.
+## Who are we?
 
-(2) The project.
+We are Nuno, Fabio, and Tomaz. 3 students currently studying at school 42 Lisbon.
 
-	ft_IRC is our own rudimentary Internet Relay Chat server! yada yada...
+---
 
-(3) How-to
+## The project.
 
-	To start the using our small server youll need a few things. A UNIX system (debian, ubuntu, etc...), a C++ compiler, CMAKE, a IRC client (specifically irssi in this case), and a bit of patience (just kidding, it shouldn't take you more than 15min untill you can start sending your own messages)!
+ft_IRC is our own rudimentary Internet Relay Chat server!
 
-	Dependencies to install
-		sudo apt install g++
-		sudo apt install make
-		sudo apt install irssi
+---
 
-	To use
+## How-to
 
-	After cloning our project, do make. Then execute the program with the following template :
+To start the using our small server youll need a few things. A UNIX system (debian, ubuntu, etc...), a C++ compiler, CMAKE, a IRC client (specifically irssi in this case), and a bit of patience (just kidding, it shouldn't take you more than 15min untill you can start sending your own messages)!
 
-		PORT is the port you want to use.
-		PASSWORD is the password you will want for your clients to connect to the server with.
-		--debug is optional, it serves mostly for a greater understanding of the messages going to and from the server.
+### Dependencies to install
+
+	sudo apt install g++
+	sudo apt install make
+	sudo apt install irssi
+
+### To use
+
+After cloning our project, do make. Then execute the program with the following template :
+
+PORT is the port you want to use.
+PASSWORD is the password you will want for your clients to connect to the server with.
+--debug is optional, it serves mostly for a greater understanding of the messages going to and from the server.
 
 	./ircserver PORT PASSWORD [--debug]
 
-	Then, either launch irssi with the following command
+Then, either launch irssi with the following command
 
-		PORT same as the one you chose for the server
-		YOUR_NICKNAME any nickname you choose, can only be used once per server
-		PASSWORD same as the one you chose for the server
+PORT same as the one you chose for the server
+YOUR_NICKNAME any nickname you choose, can only be used once per server
+PASSWORD same as the one you chose for the server
 
-		irssi -p PORT -n YOUR_NICKNAME -w PASSWORD
+	irssi -p PORT -n YOUR_NICKNAME -w PASSWORD
 
-	or once your in irssi
+or once your in irssi
 
-<!-- finish the line below as I have no idea -->
-		If running on the same machine (server and client) you can use localhost (127.0.0.1). Otherwise 
-		PORT same as the one you chose for the server
-		YOUR_NICKNAME any nickname you choose, can only be used once per server
-		PASSWORD same as the one you chose for the server
+If running on the same machine (server and client) you can use localhost (127.0.0.1) or (0.0.0.0). Otherwise 
+PORT same as the one you chose for the server
+YOUR_NICKNAME any nickname you choose, can only be used once per server
+PASSWORD same as the one you chose for the server
 
-		/CONNECT IP PORT PASSWORD YOUR_NICKNAME
+	/CONNECT IP PORT PASSWORD YOUR_NICKNAME
 
-	<!-- KEEP EXPLAING ABOUT THE COMMANDS YOU CAN USE TO CREATE CHANNELS, CHANGE PERMISSIONS, SEND MSGS, ETC... -->
+You should now be connected to the server!
 
-(4) Sources
+Here you have some actions available to you. You can send private messages to another user. Either directly to them or through a channel. While in the channel, you can change permissions, add others as users, change the topic, etc...
 
-	<!-- COPY SOURCES FROM DOCS AND ADD MORE -->
+The Follwing Commands Have Been Implemented, you can use /HELP name_of_command on irssi for details on how to use them.
+
+	/QUIT to quit
+	/TOPIC to change topic in channel
+	/JOIN to join channel or to create it in the case of it not existing
+	/MODE to change modes (such as permissions or restrictions on channels)
+	/QUERY (use /PRIVMSG in case you're using netcat)
+	/PASS (for netcat test)
+	/NICK (for netcat test)
+	/INVITE (to send invitation for channel)
+	/KICK (to kick user from channel)
+
+<!-- KEEP EXPLAING ABOUT THE COMMANDS YOU CAN USE TO CREATE CHANNELS, CHANGE PERMISSIONS, SEND MSGS, ETC... -->
+
+---
+
+## Sources
+
+### Man Pages:<br>
+https://linux.die.net/man/3/socket <br>
+https://linux.die.net/man/3/close <br>
+https://man7.org/linux/man-pages/man3/setsockopt.3p.html<br>
+https://man7.org/linux/man-pages/man3/setsockopt.3p.html<br>
+https://linux.die.net/man/3/getprotobyname<br>
+https://linux.die.net/man/3/gethostbyname<br>
+https://man7.org/linux/man-pages/man3/getaddrinfo.3.html<br>
+https://linux.die.net/man/3/freeaddrinfo<br>
+https://linux.die.net/man/3/bind<br>
+https://linux.die.net/man/3/connect<br>
+https://linux.die.net/man/3/listen<br>
+https://linux.die.net/man/3/accept<br>
+https://linux.die.net/man/3/htons<br>
+https://linux.die.net/man/3/inet_addr<br>
+https://linux.die.net/man/3/send<br>
+
+### IRC replies (all the codes our server sends back to the IRC client):<br>
+https://www.alien.net.au/irc/irc2numerics.html
+
+### The Client:<br>
+https://irssi.org/
+
+### Full IRC protocol documentation<br>
+https://modern.ircdocs.horse/
