@@ -54,7 +54,7 @@ PASSWORD same as the one you chose for the server
 
 ## Sources
 
-Man Pages:
+Man Pages:<br>
 	https://linux.die.net/man/3/socket <br>
 	https://linux.die.net/man/3/close <br>
 	https://man7.org/linux/man-pages/man3/setsockopt.3p.html<br>
