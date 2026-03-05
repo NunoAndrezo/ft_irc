@@ -1,3 +1,5 @@
+*This project has been created as part of the 42 curriculum by toferrei, famendes, nneves-a.*
+
 # Ft_IRC
 
 ### Lisbon, 9th of February 2026 
@@ -62,15 +64,15 @@ Here you have some actions available to you. You can send private messages to an
 
 The Follwing Commands Have Been Implemented, you can use /HELP name_of_command on irssi for details on how to use them.
 
-/QUIT to quit
-/TOPIC to change topic in channel
-/JOIN to join channel or to create it in the case of it not existing
-/MODE to change modes (such as permissions or restrictions on channels)
-/QUERY (use /PRIVMSG in case you're using netcat)
-/PASS (for netcat test)
-/NICK (for netcat test)
-/INVITE (to send invitation for channel)
-/KICK (to kick user from channel)
+	/QUIT to quit
+	/TOPIC to change topic in channel
+	/JOIN to join channel or to create it in the case of it not existing
+	/MODE to change modes (such as permissions or restrictions on channels)
+	/QUERY (use /PRIVMSG in case you're using netcat)
+	/PASS (for netcat test)
+	/NICK (for netcat test)
+	/INVITE (to send invitation for channel)
+	/KICK (to kick user from channel)
 
 <!-- KEEP EXPLAING ABOUT THE COMMANDS YOU CAN USE TO CREATE CHANNELS, CHANGE PERMISSIONS, SEND MSGS, ETC... -->
 
