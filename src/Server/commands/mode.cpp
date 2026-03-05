@@ -134,7 +134,7 @@ void Server::cmdMode(Client& client, std::stringstream& ss)
 				break;
 			default:
 				client.reply(ERR_UMODEUNKNOWNFLAG, std::string("MODE :Unknown mode flag"));
-				return;
+				break;
 		}
 	}
 	if (!appliedModes.empty()) 

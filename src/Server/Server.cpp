@@ -187,7 +187,7 @@ void Server::serverRun()
 	{
 		int pollCount = poll(_pollfds.data(), _pollfds.size(), 0);
 		if (pollCount == - 1)
-			throw std::runtime_error("Error: Poll failed" + std::string(strerror(errno)));
+			throw std::runtime_error("Poll failed: " + std::string(strerror(errno)));
 		//if no events occurred, continue
 		if (pollCount == 0)
 			continue;
