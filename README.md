@@ -55,28 +55,27 @@ PASSWORD same as the one you chose for the server
 ## Sources
 
 Man Pages:
+	https://linux.die.net/man/3/socket <br>
+	https://linux.die.net/man/3/close <br>
+	https://man7.org/linux/man-pages/man3/setsockopt.3p.html<br>
+	https://man7.org/linux/man-pages/man3/setsockopt.3p.html<br>
+	https://linux.die.net/man/3/getprotobyname<br>
+	https://linux.die.net/man/3/gethostbyname<br>
+	https://man7.org/linux/man-pages/man3/getaddrinfo.3.html<br>
+	https://linux.die.net/man/3/freeaddrinfo<br>
+	https://linux.die.net/man/3/bind<br>
+	https://linux.die.net/man/3/connect<br>
+	https://linux.die.net/man/3/listen<br>
+	https://linux.die.net/man/3/accept<br>
+	https://linux.die.net/man/3/htons<br>
+	https://linux.die.net/man/3/inet_addr<br>
+	https://linux.die.net/man/3/send<br>
 
-https://linux.die.net/man/3/socket
-https://linux.die.net/man/3/close
-https://man7.org/linux/man-pages/man3/setsockopt.3p.html
-https://man7.org/linux/man-pages/man3/setsockopt.3p.html
-https://linux.die.net/man/3/getprotobyname
-https://linux.die.net/man/3/gethostbyname
-https://man7.org/linux/man-pages/man3/getaddrinfo.3.html
-https://linux.die.net/man/3/freeaddrinfo
-https://linux.die.net/man/3/bind
-https://linux.die.net/man/3/connect
-https://linux.die.net/man/3/listen
-https://linux.die.net/man/3/accept
-https://linux.die.net/man/3/htons
-https://linux.die.net/man/3/inet_addr
-https://linux.die.net/man/3/send
+IRC replies (all the codes our server sends back to the IRC client):<br>
+	https://www.alien.net.au/irc/irc2numerics.html
 
-IRC replies (all the codes our server sends back to the IRC client):
-https://www.alien.net.au/irc/irc2numerics.html
-
-The Client:
+The Client:<br>
 	https://irssi.org/
 
-Full IRC protocol documentation
+Full IRC protocol documentation<br>
 	https://modern.ircdocs.horse/
