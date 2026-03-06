@@ -17,7 +17,8 @@ We are Nuno, Fabio, and Tomaz. 3 students currently studying at school 42 Lisbon
 
 ## The project.
 
-ft_IRC is our own rudimentary Internet Relay Chat server!
+ft_IRC is our own rudimentary Internet Relay Chat server! Essentially it is a program that functions as a chat server using IRC protocol (see sources).
+Through the usage of an IRC client you will be able to connect to this server and communicate with others also connected on it!
 
 ---
 
@@ -33,7 +34,23 @@ To start the using our small server youll need a few things. A UNIX system (debi
 
 ### To use
 
-After cloning our project, do make. Then execute the program with the following template :
+After cloning our project, run the following command
+
+	make
+
+You can also do the following to recompile
+
+	make re
+
+To clean dependencies
+
+	make clean
+
+And lastly to clean the executable
+
+	make fclean
+
+Then execute the program respecting the following template
 
 PORT is the port you want to use.
 PASSWORD is the password you will want for your clients to connect to the server with.
